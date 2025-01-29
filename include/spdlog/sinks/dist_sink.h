@@ -19,32 +19,32 @@
 namespace spdlog {
 namespace sinks {
 
-template <typename Mutex>
-class dist_sink : public base_sink<Mutex> {
+template <typename Mutex, template <typename> class Alloc>
+class dist_sink : public base_sink<Mutex, Alloc> {
 public:
     dist_sink() = default;
-    explicit dist_sink(std::vector<std::shared_ptr<sink>> sinks)
+    explicit dist_sink(std::vector<std::shared_ptr<sink<Alloc>>> sinks)
         : sinks_(sinks) {}
 
     dist_sink(const dist_sink &) = delete;
     dist_sink &operator=(const dist_sink &) = delete;
 
-    void add_sink(std::shared_ptr<sink> sub_sink) {
-        std::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
+    void add_sink(std::shared_ptr<sink<Alloc>> sub_sink) {
+        std::lock_guard<Mutex> lock(base_sink<Mutex, Alloc>::mutex_);
         sinks_.push_back(sub_sink);
     }
 
-    void remove_sink(std::shared_ptr<sink> sub_sink) {
-        std::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
+    void remove_sink(std::shared_ptr<sink<Alloc>> sub_sink) {
+        std::lock_guard<Mutex> lock(base_sink<Mutex, Alloc>::mutex_);
         sinks_.erase(std::remove(sinks_.begin(), sinks_.end(), sub_sink), sinks_.end());
     }
 
-    void set_sinks(std::vector<std::shared_ptr<sink>> sinks) {
-        std::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
+    void set_sinks(std::vector<std::shared_ptr<sink<Alloc>>> sinks) {
+        std::lock_guard<Mutex> lock(base_sink<Mutex, Alloc>::mutex_);
         sinks_ = std::move(sinks);
     }
 
-    std::vector<std::shared_ptr<sink>> &sinks() { return sinks_; }
+    std::vector<std::shared_ptr<sink<Alloc>>> &sinks() { return sinks_; }
 
 protected:
     void sink_it_(const details::log_msg &msg) override {
@@ -65,17 +65,17 @@ protected:
         set_formatter_(details::make_unique<spdlog::pattern_formatter>(pattern));
     }
 
-    void set_formatter_(std::unique_ptr<spdlog::formatter> sink_formatter) override {
-        base_sink<Mutex>::formatter_ = std::move(sink_formatter);
+    void set_formatter_(std::unique_ptr<spdlog::basic_formatter<Alloc>> sink_formatter) override {
+        base_sink<Mutex, Alloc>::formatter_ = std::move(sink_formatter);
         for (auto &sub_sink : sinks_) {
-            sub_sink->set_formatter(base_sink<Mutex>::formatter_->clone());
+            sub_sink->set_formatter(base_sink<Mutex, Alloc>::formatter_->clone());
         }
     }
-    std::vector<std::shared_ptr<sink>> sinks_;
+    std::vector<std::shared_ptr<sink<Alloc>>> sinks_;
 };
 
-using dist_sink_mt = dist_sink<std::mutex>;
-using dist_sink_st = dist_sink<details::null_mutex>;
+using dist_sink_mt = dist_sink<std::mutex, std::allocator>;
+using dist_sink_st = dist_sink<details::null_mutex, std::allocator>;
 
 }  // namespace sinks
 }  // namespace spdlog

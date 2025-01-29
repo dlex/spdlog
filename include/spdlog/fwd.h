@@ -3,11 +3,20 @@
 
 #pragma once
 
+#include <memory>
+
 namespace spdlog {
-class logger;
-class formatter;
+
+template <template <typename> class Alloc>
+class basic_logger;
+using logger = basic_logger<std::allocator>;
+
+template <template <typename> class Alloc>
+class basic_formatter;
+using formatter = basic_formatter<std::allocator>;
 
 namespace sinks {
+template <template <typename> class Alloc>
 class sink;
 }
 

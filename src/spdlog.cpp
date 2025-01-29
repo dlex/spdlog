@@ -18,11 +18,17 @@
 #include <spdlog/sinks/sink-inl.h>
 #include <spdlog/spdlog-inl.h>
 
+#include <memory>
 #include <mutex>
 
 // template instantiate logger constructor with sinks init list
-template SPDLOG_API spdlog::logger::logger(std::string name,
-                                           sinks_init_list::iterator begin,
-                                           sinks_init_list::iterator end);
-template class SPDLOG_API spdlog::sinks::base_sink<std::mutex>;
-template class SPDLOG_API spdlog::sinks::base_sink<spdlog::details::null_mutex>;
+template SPDLOG_API spdlog::basic_logger<std::allocator>::basic_logger(
+    std::string name,
+    sinks_init_list<std::allocator>::iterator begin,
+    sinks_init_list<std::allocator>::iterator end);
+template class SPDLOG_API spdlog::sinks::base_sink<std::mutex, std::allocator>;
+template class SPDLOG_API spdlog::sinks::base_sink<spdlog::details::null_mutex, std::allocator>;
+template class SPDLOG_API spdlog::sinks::sink<std::allocator>;
+template class SPDLOG_API spdlog::details::registry<std::allocator>;
+template class SPDLOG_API spdlog::basic_pattern_formatter<std::allocator>;
+template class SPDLOG_API spdlog::basic_logger<std::allocator>;

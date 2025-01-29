@@ -20,8 +20,8 @@ namespace sinks {
  * Windows color console sink. Uses WriteConsoleA to write to the console with
  * colors
  */
-template <typename ConsoleMutex>
-class wincolor_sink : public sink {
+template <typename ConsoleMutex, class Alloc = default_allocator_t>
+class wincolor_sink : public sink<Alloc> {
 public:
     wincolor_sink(void *out_handle, color_mode mode);
     ~wincolor_sink() override;
