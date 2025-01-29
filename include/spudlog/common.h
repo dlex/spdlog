@@ -70,6 +70,17 @@
 #define SPDLOG_CONSTEXPR constexpr
 #endif
 
+// Conditional noexcept for allocator-aware swap (C++17 and later).
+// An allocator-aware swap is noexcept when the allocator either propagates on
+// swap (propagate_on_container_swap) or is always equal (is_always_equal).
+#if __cplusplus >= 201703L
+#define SPDLOG_ALLOC_SWAP_NOEXCEPT(Allocator)                                        \
+    noexcept(std::allocator_traits<Allocator>::propagate_on_container_swap::value || \
+             std::allocator_traits<Allocator>::is_always_equal::value)
+#else
+#define SPDLOG_ALLOC_SWAP_NOEXCEPT(Allocator)
+#endif
+
 // If building with std::format, can just use constexpr, otherwise if building with fmt
 // SPDLOG_CONSTEXPR_FUNC needs to be set the same as FMT_CONSTEXPR to avoid situations where
 // a constexpr function in spdlog could end up calling a non-constexpr function in fmt
@@ -122,9 +133,13 @@
 
 namespace spdlog {
 
-class formatter;
+using default_allocator_t = std::allocator<char>;
+
+template <class Alloc>
+class basic_formatter;
 
 namespace sinks {
+template <class Alloc>
 class sink;
 }
 
@@ -139,8 +154,10 @@ using filename_t = std::string;
 #endif
 
 using log_clock = std::chrono::system_clock;
-using sink_ptr = std::shared_ptr<sinks::sink>;
-using sinks_init_list = std::initializer_list<sink_ptr>;
+template <class Alloc = default_allocator_t>
+using sink_ptr = std::shared_ptr<sinks::sink<Alloc>>;
+template <class Alloc>
+using sinks_init_list = std::initializer_list<sink_ptr<Alloc>>;
 using err_handler = std::function<void(const std::string &err_msg)>;
 #ifdef SPDLOG_USE_STD_FORMAT
 namespace fmt_lib = std;
@@ -175,7 +192,11 @@ using wformat_string_t = std::wstring_view;
 namespace fmt_lib = fmt;
 
 using string_view_t = fmt::basic_string_view<char>;
-using memory_buf_t = fmt::basic_memory_buffer<char, 250>;
+
+template <class Alloc>
+using basic_memory_buf_t = fmt::basic_memory_buffer<char, 250, Alloc>;
+
+using memory_buf_t = basic_memory_buf_t<default_allocator_t>;
 
 template <typename... Args>
 using format_string_t = fmt::format_string<Args...>;
@@ -342,7 +363,8 @@ namespace details {
 
 // to_string_view
 
-SPDLOG_CONSTEXPR_FUNC spdlog::string_view_t to_string_view(const memory_buf_t &buf)
+template <class Alloc>
+SPDLOG_CONSTEXPR_FUNC spdlog::string_view_t to_string_view(const basic_memory_buf_t<Alloc> &buf)
     SPDLOG_NOEXCEPT {
     return spdlog::string_view_t{buf.data(), buf.size()};
 }
