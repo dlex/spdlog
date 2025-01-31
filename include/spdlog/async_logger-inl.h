@@ -14,7 +14,7 @@
 #include <memory>
 #include <string>
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE spdlog::basic_async_logger<Alloc>::basic_async_logger(
     std::string logger_name,
     sinks_init_list<Alloc> sinks_list,
@@ -26,7 +26,7 @@ SPDLOG_INLINE spdlog::basic_async_logger<Alloc>::basic_async_logger(
                          std::move(tp),
                          overflow_policy) {}
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE spdlog::basic_async_logger<Alloc>::basic_async_logger(
     std::string logger_name,
     sink_ptr<Alloc> single_sink,
@@ -36,7 +36,7 @@ SPDLOG_INLINE spdlog::basic_async_logger<Alloc>::basic_async_logger(
           std::move(logger_name), {std::move(single_sink)}, std::move(tp), overflow_policy) {}
 
 // send the log message to the thread pool
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void spdlog::basic_async_logger<Alloc>::sink_it_(const details::log_msg &msg) {
     SPDLOG_TRY{if (auto pool_ptr = thread_pool_.lock()){
         pool_ptr->post_log(this->shared_from_this(), msg, overflow_policy_);
@@ -49,7 +49,7 @@ SPDLOG_LOGGER_CATCH(msg.source)
 }
 
 // send flush request to the thread pool
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void spdlog::basic_async_logger<Alloc>::flush_() {
     SPDLOG_TRY{if (auto pool_ptr = thread_pool_.lock()){
         pool_ptr->post_flush(this->shared_from_this(), overflow_policy_);
@@ -64,7 +64,7 @@ SPDLOG_LOGGER_CATCH(source_loc())
 //
 // backend functions - called from the thread pool to do the actual job
 //
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void spdlog::basic_async_logger<Alloc>::backend_sink_it_(
     const details::log_msg &msg) {
     for (auto &sink : this->sinks_) {
@@ -79,7 +79,7 @@ SPDLOG_INLINE void spdlog::basic_async_logger<Alloc>::backend_sink_it_(
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void spdlog::basic_async_logger<Alloc>::backend_flush_() {
     for (auto &sink : this->sinks_) {
         SPDLOG_TRY { sink->flush(); }
@@ -87,7 +87,7 @@ SPDLOG_INLINE void spdlog::basic_async_logger<Alloc>::backend_flush_() {
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE std::shared_ptr<spdlog::basic_logger<Alloc>> spdlog::basic_async_logger<Alloc>::clone(
     std::string new_name) {
     auto cloned = std::make_shared<spdlog::basic_async_logger<Alloc>>(*this);

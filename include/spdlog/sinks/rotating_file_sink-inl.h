@@ -23,7 +23,7 @@
 namespace spdlog {
 namespace sinks {
 
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 SPDLOG_INLINE rotating_file_sink<Mutex, Alloc>::rotating_file_sink(
     filename_t base_filename,
     std::size_t max_size,
@@ -51,7 +51,7 @@ SPDLOG_INLINE rotating_file_sink<Mutex, Alloc>::rotating_file_sink(
 
 // calc filename according to index and file extension if exists.
 // e.g. calc_filename("logs/mylog.txt, 3) => "logs/mylog.3.txt".
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 SPDLOG_INLINE filename_t rotating_file_sink<Mutex, Alloc>::calc_filename(const filename_t &filename,
                                                                          std::size_t index) {
     if (index == 0u) {
@@ -63,13 +63,13 @@ SPDLOG_INLINE filename_t rotating_file_sink<Mutex, Alloc>::calc_filename(const f
     return fmt_lib::format(SPDLOG_FMT_STRING(SPDLOG_FILENAME_T("{}.{}{}")), basename, index, ext);
 }
 
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 SPDLOG_INLINE filename_t rotating_file_sink<Mutex, Alloc>::filename() {
     std::lock_guard<Mutex> lock(base_sink<Mutex, Alloc>::mutex_);
     return file_helper_.filename();
 }
 
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 SPDLOG_INLINE void rotating_file_sink<Mutex, Alloc>::sink_it_(const details::log_msg &msg) {
     basic_memory_buf_t<Alloc> formatted;
     base_sink<Mutex, Alloc>::formatter_->format(msg, formatted);
@@ -89,7 +89,7 @@ SPDLOG_INLINE void rotating_file_sink<Mutex, Alloc>::sink_it_(const details::log
     current_size_ = new_size;
 }
 
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 SPDLOG_INLINE void rotating_file_sink<Mutex, Alloc>::flush_() {
     file_helper_.flush();
 }
@@ -99,7 +99,7 @@ SPDLOG_INLINE void rotating_file_sink<Mutex, Alloc>::flush_() {
 // log.1.txt -> log.2.txt
 // log.2.txt -> log.3.txt
 // log.3.txt -> delete
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 SPDLOG_INLINE void rotating_file_sink<Mutex, Alloc>::rotate_() {
     using details::os::filename_to_str;
     using details::os::path_exists;
@@ -132,7 +132,7 @@ SPDLOG_INLINE void rotating_file_sink<Mutex, Alloc>::rotate_() {
 
 // delete the target if exists, and rename the src file  to target
 // return true on success, false otherwise.
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 SPDLOG_INLINE bool rotating_file_sink<Mutex, Alloc>::rename_file_(
     const filename_t &src_filename, const filename_t &target_filename) {
     // try to delete the target file in case it already exists.

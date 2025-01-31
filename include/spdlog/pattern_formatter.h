@@ -37,7 +37,7 @@ struct padding_info {
     bool enabled_ = false;
 };
 
-template <template <typename> class Alloc>
+template <class Alloc>
 class SPDLOG_API flag_formatter {
 public:
     explicit flag_formatter(padding_info padinfo)
@@ -54,7 +54,7 @@ protected:
 
 }  // namespace details
 
-template <template <typename> class Alloc>
+template <class Alloc>
 class SPDLOG_API basic_custom_flag_formatter : public details::flag_formatter<Alloc> {
 public:
     virtual std::unique_ptr<basic_custom_flag_formatter> clone() const = 0;
@@ -64,7 +64,7 @@ public:
     }
 };
 
-template <template <typename> class Alloc>
+template <class Alloc>
 class SPDLOG_API basic_pattern_formatter final : public basic_formatter<Alloc> {
 public:
     using custom_flags = std::unordered_map<char, std::unique_ptr<basic_custom_flag_formatter<Alloc>>>;
@@ -103,7 +103,7 @@ private:
     custom_flags custom_handlers_;
 
     std::tm get_time_(const details::log_msg &msg);
-    template <template <template <typename> class> class Padder>
+    template <template <typename> class Padder>
     void handle_flag_(char flag, details::padding_info padding);
 
     // Extract given pad spec (e.g. %8X)
@@ -115,8 +115,8 @@ private:
     void compile_pattern_(const std::string &pattern);
 };
 
-using custom_flag_formatter = basic_custom_flag_formatter<std::allocator>;
-using pattern_formatter = basic_pattern_formatter<std::allocator>;
+using custom_flag_formatter = basic_custom_flag_formatter<default_allocator_t>;
+using pattern_formatter = basic_pattern_formatter<default_allocator_t>;
 
 }  // namespace spdlog
 

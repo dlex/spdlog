@@ -22,13 +22,14 @@
 #include <mutex>
 
 // template instantiate logger constructor with sinks init list
-template SPDLOG_API spdlog::basic_logger<std::allocator>::basic_logger(
+template SPDLOG_API spdlog::basic_logger<spdlog::default_allocator_t>::basic_logger(
     std::string name,
-    sinks_init_list<std::allocator>::iterator begin,
-    sinks_init_list<std::allocator>::iterator end);
-template class SPDLOG_API spdlog::sinks::base_sink<std::mutex, std::allocator>;
-template class SPDLOG_API spdlog::sinks::base_sink<spdlog::details::null_mutex, std::allocator>;
-template class SPDLOG_API spdlog::sinks::sink<std::allocator>;
-template class SPDLOG_API spdlog::details::registry<std::allocator>;
-template class SPDLOG_API spdlog::basic_pattern_formatter<std::allocator>;
-template class SPDLOG_API spdlog::basic_logger<std::allocator>;
+    sinks_init_list<default_allocator_t>::iterator begin,
+    sinks_init_list<default_allocator_t>::iterator end);
+template class SPDLOG_API spdlog::sinks::base_sink<std::mutex, spdlog::default_allocator_t>;
+template class SPDLOG_API
+    spdlog::sinks::base_sink<spdlog::details::null_mutex, spdlog::default_allocator_t>;
+template class SPDLOG_API spdlog::sinks::sink<spdlog::default_allocator_t>;
+template class SPDLOG_API spdlog::details::registry<spdlog::default_allocator_t>;
+template class SPDLOG_API spdlog::basic_pattern_formatter<spdlog::default_allocator_t>;
+template class SPDLOG_API spdlog::basic_logger<spdlog::default_allocator_t>;

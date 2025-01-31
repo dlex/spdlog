@@ -52,7 +52,8 @@ SPDLOG_API void initialize_logger(std::shared_ptr<logger> logger);
 SPDLOG_API std::shared_ptr<logger> get(const std::string &name);
 
 // Set global formatter. Each sink in each logger will get a clone of this object
-SPDLOG_API void set_formatter(std::unique_ptr<spdlog::basic_formatter<std::allocator>> formatter);
+SPDLOG_API void set_formatter(
+    std::unique_ptr<spdlog::basic_formatter<default_allocator_t>> formatter);
 
 // Set global format string.
 // example: spdlog::set_pattern("%Y-%m-%d %H:%M:%S.%e %l : %v");

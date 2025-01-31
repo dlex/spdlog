@@ -69,7 +69,7 @@ struct daily_filename_format_calculator {
  */
 template <typename Mutex,
           typename FileNameCalc = daily_filename_calculator,
-          template <typename> class Alloc = std::allocator>
+          class Alloc = default_allocator_t>
 class daily_file_sink final : public base_sink<Mutex, Alloc> {
 public:
     // create daily file sink which rotates on given time

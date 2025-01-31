@@ -13,7 +13,7 @@
 namespace spdlog {
 namespace details {
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE basic_thread_pool<Alloc>::basic_thread_pool(size_t q_max_items,
                                                           size_t threads_n,
                                                           std::function<void()> on_thread_start,
@@ -33,18 +33,18 @@ SPDLOG_INLINE basic_thread_pool<Alloc>::basic_thread_pool(size_t q_max_items,
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE basic_thread_pool<Alloc>::basic_thread_pool(size_t q_max_items,
                                                           size_t threads_n,
                                                           std::function<void()> on_thread_start)
     : basic_thread_pool(q_max_items, threads_n, on_thread_start, [] {}) {}
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE basic_thread_pool<Alloc>::basic_thread_pool(size_t q_max_items, size_t threads_n)
     : basic_thread_pool(q_max_items, threads_n, [] {}, [] {}) {}
 
 // message all threads to terminate gracefully join them
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE basic_thread_pool<Alloc>::~basic_thread_pool() {
     SPDLOG_TRY {
         for (size_t i = 0; i < threads_.size(); i++) {
@@ -59,7 +59,7 @@ SPDLOG_INLINE basic_thread_pool<Alloc>::~basic_thread_pool() {
     SPDLOG_CATCH_STD
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 void SPDLOG_INLINE basic_thread_pool<Alloc>::post_log(async_logger_ptr<Alloc> &&worker_ptr,
                                                       const details::log_msg &msg,
                                                       async_overflow_policy overflow_policy) {
@@ -67,39 +67,39 @@ void SPDLOG_INLINE basic_thread_pool<Alloc>::post_log(async_logger_ptr<Alloc> &&
     post_async_msg_(std::move(async_m), overflow_policy);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 void SPDLOG_INLINE basic_thread_pool<Alloc>::post_flush(async_logger_ptr<Alloc> &&worker_ptr,
                                                         async_overflow_policy overflow_policy) {
     post_async_msg_(async_msg<Alloc>(std::move(worker_ptr), async_msg_type::flush),
                     overflow_policy);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 size_t SPDLOG_INLINE basic_thread_pool<Alloc>::overrun_counter() {
     return q_.overrun_counter();
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 void SPDLOG_INLINE basic_thread_pool<Alloc>::reset_overrun_counter() {
     q_.reset_overrun_counter();
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 size_t SPDLOG_INLINE basic_thread_pool<Alloc>::discard_counter() {
     return q_.discard_counter();
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 void SPDLOG_INLINE basic_thread_pool<Alloc>::reset_discard_counter() {
     q_.reset_discard_counter();
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 size_t SPDLOG_INLINE basic_thread_pool<Alloc>::queue_size() {
     return q_.size();
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 void SPDLOG_INLINE basic_thread_pool<Alloc>::post_async_msg_(
     async_msg<Alloc> &&new_msg, async_overflow_policy overflow_policy) {
     if (overflow_policy == async_overflow_policy::block) {
@@ -112,7 +112,7 @@ void SPDLOG_INLINE basic_thread_pool<Alloc>::post_async_msg_(
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 void SPDLOG_INLINE basic_thread_pool<Alloc>::worker_loop_() {
     while (process_next_msg_()) {
     }
@@ -121,7 +121,7 @@ void SPDLOG_INLINE basic_thread_pool<Alloc>::worker_loop_() {
 // process next message in the queue
 // return true if this thread should still be active (while no terminate msg
 // was received)
-template <template <typename> class Alloc>
+template <class Alloc>
 bool SPDLOG_INLINE basic_thread_pool<Alloc>::process_next_msg_() {
     async_msg<Alloc> incoming_async_msg;
     q_.dequeue(incoming_async_msg);

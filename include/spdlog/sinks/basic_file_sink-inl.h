@@ -13,26 +13,26 @@
 namespace spdlog {
 namespace sinks {
 
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 SPDLOG_INLINE basic_file_sink<Mutex, Alloc>::basic_file_sink(
     const filename_t &filename, bool truncate, const file_event_handlers &event_handlers)
     : file_helper_{event_handlers} {
     file_helper_.open(filename, truncate);
 }
 
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 SPDLOG_INLINE const filename_t &basic_file_sink<Mutex, Alloc>::filename() const {
     return file_helper_.filename();
 }
 
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 SPDLOG_INLINE void basic_file_sink<Mutex, Alloc>::sink_it_(const details::log_msg &msg) {
     basic_memory_buf_t<Alloc> formatted;
     base_sink<Mutex, Alloc>::formatter_->format(msg, formatted);
     file_helper_.write(details::to_string_view(formatted));
 }
 
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 SPDLOG_INLINE void basic_file_sink<Mutex, Alloc>::flush_() {
     file_helper_.flush();
 }

@@ -27,11 +27,11 @@ enum class async_overflow_policy {
 };
 
 namespace details {
-template <template <typename> class Alloc>
+template <class Alloc>
 class basic_thread_pool;
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 class SPDLOG_API basic_async_logger final
     : public std::enable_shared_from_this<basic_async_logger<Alloc>>,
       public basic_logger<Alloc> {
@@ -71,7 +71,7 @@ private:
     async_overflow_policy overflow_policy_;
 };
 
-using async_logger = basic_async_logger<std::allocator>;
+using async_logger = basic_async_logger<default_allocator_t>;
 
 }  // namespace spdlog
 

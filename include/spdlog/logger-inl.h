@@ -16,7 +16,7 @@
 namespace spdlog {
 
 // public methods
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc>::basic_logger(const basic_logger &other)
     : name_(other.name_),
       sinks_(other.sinks_),
@@ -25,7 +25,7 @@ SPDLOG_INLINE basic_logger<Alloc>::basic_logger(const basic_logger &other)
       custom_err_handler_(other.custom_err_handler_),
       tracer_(other.tracer_) {}
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc>::basic_logger(basic_logger &&other) SPDLOG_NOEXCEPT
     : name_(std::move(other.name_)),
       sinks_(std::move(other.sinks_)),
@@ -36,14 +36,14 @@ SPDLOG_INLINE basic_logger<Alloc>::basic_logger(basic_logger &&other) SPDLOG_NOE
 
 {}
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc> &basic_logger<Alloc>::operator=(basic_logger other)
     SPDLOG_NOEXCEPT {
     this->swap(other);
     return *this;
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::swap(basic_logger &other) SPDLOG_NOEXCEPT {
     name_.swap(other.name_);
     sinks_.swap(other.sinks_);
@@ -62,29 +62,29 @@ SPDLOG_INLINE void basic_logger<Alloc>::swap(basic_logger &other) SPDLOG_NOEXCEP
     std::swap(tracer_, other.tracer_);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void swap(basic_logger<Alloc> &a, basic_logger<Alloc> &b) {
     a.swap(b);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::set_level(level::level_enum log_level) {
     level_.store(log_level);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE level::level_enum basic_logger<Alloc>::level() const {
     return static_cast<level::level_enum>(level_.load(std::memory_order_relaxed));
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE const std::string &basic_logger<Alloc>::name() const {
     return name_;
 }
 
 // set formatting for the sinks in this logger.
 // each sink will get a separate instance of the formatter object.
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::set_formatter(std::unique_ptr<basic_formatter<Alloc>> f) {
     for (auto it = sinks_.begin(); it != sinks_.end(); ++it) {
         if (std::next(it) == sinks_.end()) {
@@ -97,7 +97,7 @@ SPDLOG_INLINE void basic_logger<Alloc>::set_formatter(std::unique_ptr<basic_form
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::set_pattern(std::string pattern,
                                                     pattern_time_type time_type) {
     auto new_formatter =
@@ -106,57 +106,57 @@ SPDLOG_INLINE void basic_logger<Alloc>::set_pattern(std::string pattern,
 }
 
 // create new backtrace sink and move to it all our child sinks
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::enable_backtrace(size_t n_messages) {
     tracer_.enable(n_messages);
 }
 
 // restore orig sinks and level and delete the backtrace sink
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::disable_backtrace() {
     tracer_.disable();
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::dump_backtrace() {
     dump_backtrace_();
 }
 
 // flush functions
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::flush() {
     flush_();
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::flush_on(level::level_enum log_level) {
     flush_level_.store(log_level);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE level::level_enum basic_logger<Alloc>::flush_level() const {
     return static_cast<level::level_enum>(flush_level_.load(std::memory_order_relaxed));
 }
 
 // sinks
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE const std::vector<sink_ptr<Alloc>> &basic_logger<Alloc>::sinks() const {
     return sinks_;
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE std::vector<sink_ptr<Alloc>> &basic_logger<Alloc>::sinks() {
     return sinks_;
 }
 
 // error handler
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::set_error_handler(err_handler handler) {
     custom_err_handler_ = std::move(handler);
 }
 
 // create new logger with same sinks and configuration.
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE std::shared_ptr<basic_logger<Alloc>> basic_logger<Alloc>::clone(
     std::string logger_name) {
     auto cloned = std::make_shared<basic_logger>(*this);
@@ -165,7 +165,7 @@ SPDLOG_INLINE std::shared_ptr<basic_logger<Alloc>> basic_logger<Alloc>::clone(
 }
 
 // protected methods
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::log_it_(const spdlog::details::log_msg &log_msg,
                                                 bool log_enabled,
                                                 bool traceback_enabled) {
@@ -177,7 +177,7 @@ SPDLOG_INLINE void basic_logger<Alloc>::log_it_(const spdlog::details::log_msg &
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::sink_it_(const details::log_msg &msg) {
     for (auto &sink : sinks_) {
         if (sink->should_log(msg.level)) {
@@ -191,7 +191,7 @@ SPDLOG_INLINE void basic_logger<Alloc>::sink_it_(const details::log_msg &msg) {
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::flush_() {
     for (auto &sink : sinks_) {
         SPDLOG_TRY { sink->flush(); }
@@ -199,7 +199,7 @@ SPDLOG_INLINE void basic_logger<Alloc>::flush_() {
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::dump_backtrace_() {
     using details::log_msg;
     if (tracer_.enabled() && !tracer_.empty()) {
@@ -211,13 +211,13 @@ SPDLOG_INLINE void basic_logger<Alloc>::dump_backtrace_() {
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE bool basic_logger<Alloc>::should_flush_(const details::log_msg &msg) {
     auto flush_level = flush_level_.load(std::memory_order_relaxed);
     return (msg.level >= flush_level) && (msg.level != level::off);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_logger<Alloc>::err_handler_(const std::string &msg) {
     if (custom_err_handler_) {
         custom_err_handler_(msg);

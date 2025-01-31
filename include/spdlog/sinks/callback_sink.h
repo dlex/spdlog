@@ -19,7 +19,7 @@ namespace sinks {
 /*
  * Trivial callback sink, gets a callback function and calls it on each log
  */
-template <typename Mutex, template <typename> class Alloc = std::allocator>
+template <typename Mutex, class Alloc = default_allocator_t>
 class callback_sink final : public base_sink<Mutex, Alloc> {
 public:
     explicit callback_sink(const custom_log_callback &callback)

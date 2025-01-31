@@ -9,7 +9,7 @@
 namespace spdlog {
 
 namespace sinks {
-template <template <typename> class Alloc>
+template <class Alloc>
 class SPDLOG_API sink {
 public:
     virtual ~sink() = default;

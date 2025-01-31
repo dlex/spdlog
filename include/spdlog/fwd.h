@@ -7,16 +7,18 @@
 
 namespace spdlog {
 
-template <template <typename> class Alloc>
-class basic_logger;
-using logger = basic_logger<std::allocator>;
+using default_allocator_t = std::allocator<char>;
 
-template <template <typename> class Alloc>
+template <class Alloc>
+class basic_logger;
+using logger = basic_logger<default_allocator_t>;
+
+template <class Alloc>
 class basic_formatter;
-using formatter = basic_formatter<std::allocator>;
+using formatter = basic_formatter<default_allocator_t>;
 
 namespace sinks {
-template <template <typename> class Alloc>
+template <class Alloc>
 class sink;
 }
 

@@ -36,7 +36,7 @@
 
 namespace spdlog {
 namespace sinks {
-template <typename Mutex, template <typename> class Alloc = std::allocator>
+template <typename Mutex, class Alloc = default_allocator_t>
 class dup_filter_sink : public dist_sink<Mutex, Alloc> {
 public:
     template <class Rep, class Period>

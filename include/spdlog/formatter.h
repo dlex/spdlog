@@ -8,7 +8,7 @@
 
 namespace spdlog {
 
-template <template <typename> class Alloc = std::allocator>
+template <class Alloc = default_allocator_t>
 class basic_formatter {
 public:
     virtual ~basic_formatter() = default;
@@ -16,6 +16,6 @@ public:
     virtual std::unique_ptr<basic_formatter> clone() const = 0;
 };
 
-using formatter = basic_formatter<std::allocator>;
+using formatter = basic_formatter<default_allocator_t>;
 
 }  // namespace spdlog

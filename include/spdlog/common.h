@@ -122,11 +122,11 @@
 
 namespace spdlog {
 
-template <template <typename> class Alloc>
+template <class Alloc>
 class basic_formatter;
 
 namespace sinks {
-template <template <typename> class Alloc>
+template <class Alloc>
 class sink;
 }
 
@@ -141,9 +141,9 @@ using filename_t = std::string;
 #endif
 
 using log_clock = std::chrono::system_clock;
-template <template <typename> class Alloc>
+template <class Alloc>
 using sink_ptr = std::shared_ptr<sinks::sink<Alloc>>;
-template <template <typename> class Alloc>
+template <class Alloc>
 using sinks_init_list = std::initializer_list<sink_ptr<Alloc>>;
 using err_handler = std::function<void(const std::string &err_msg)>;
 #ifdef SPDLOG_USE_STD_FORMAT
@@ -180,10 +180,12 @@ namespace fmt_lib = fmt;
 
 using string_view_t = fmt::basic_string_view<char>;
 
-template <template <typename> class Alloc>
-using basic_memory_buf_t = fmt::basic_memory_buffer<char, 250, Alloc<char>>;
+template <class Alloc>
+using basic_memory_buf_t = fmt::basic_memory_buffer<char, 250, Alloc>;
 
-using memory_buf_t = basic_memory_buf_t<std::allocator>;
+using default_allocator_t = std::allocator<char>;
+
+using memory_buf_t = basic_memory_buf_t<default_allocator_t>;
 
 template <typename... Args>
 using format_string_t = fmt::format_string<Args...>;
@@ -350,7 +352,7 @@ namespace details {
 
 // to_string_view
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_CONSTEXPR_FUNC spdlog::string_view_t to_string_view(const basic_memory_buf_t<Alloc> &buf)
     SPDLOG_NOEXCEPT {
     return spdlog::string_view_t{buf.data(), buf.size()};

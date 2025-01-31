@@ -371,10 +371,10 @@ protected:
     void err_handler_(const std::string &msg);
 };
 
-template <template <typename> class Alloc>
+template <class Alloc>
 void swap(basic_logger<Alloc> &a, basic_logger<Alloc> &b);
 
-using logger = basic_logger<std::allocator>;
+using logger = basic_logger<default_allocator_t>;
 
 }  // namespace spdlog
 

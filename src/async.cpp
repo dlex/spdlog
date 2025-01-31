@@ -10,5 +10,5 @@
 #include <spdlog/details/periodic_worker-inl.h>
 #include <spdlog/details/thread_pool-inl.h>
 
-template class SPDLOG_API spdlog::basic_async_logger<std::allocator>;
-template class SPDLOG_API spdlog::details::basic_thread_pool<std::allocator>;
+template class SPDLOG_API spdlog::basic_async_logger<spdlog::default_allocator_t>;
+template class SPDLOG_API spdlog::details::basic_thread_pool<spdlog::default_allocator_t>;

@@ -14,19 +14,19 @@
 #include <vector>
 
 namespace spdlog {
-template <template <typename> class Alloc>
+template <class Alloc>
 class basic_async_logger;
 
 namespace details {
 
-template <template <typename> class Alloc>
+template <class Alloc>
 using async_logger_ptr = std::shared_ptr<spdlog::basic_async_logger<Alloc>>;
 
 enum class async_msg_type { log, flush, terminate };
 
 // Async msg to move to/from the queue
 // Movable only. should never be copied
-template <template <typename> class Alloc = std::allocator>
+template <class Alloc = default_allocator_t>
 struct async_msg : log_msg_buffer<Alloc> {
     async_msg_type msg_type{async_msg_type::log};
     async_logger_ptr<Alloc> worker_ptr;
@@ -70,7 +70,7 @@ struct async_msg : log_msg_buffer<Alloc> {
         : async_msg{nullptr, the_type} {}
 };
 
-template <template <typename> class Alloc>
+template <class Alloc>
 class SPDLOG_API basic_thread_pool {
 public:
     using item_type = async_msg<Alloc>;
@@ -113,7 +113,7 @@ private:
     bool process_next_msg_();
 };
 
-using thread_pool = basic_thread_pool<std::allocator>;
+using thread_pool = basic_thread_pool<default_allocator_t>;
 
 }  // namespace details
 }  // namespace spdlog

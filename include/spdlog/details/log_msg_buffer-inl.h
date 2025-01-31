@@ -10,7 +10,7 @@
 namespace spdlog {
 namespace details {
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE log_msg_buffer<Alloc>::log_msg_buffer(const log_msg &orig_msg)
     : log_msg{orig_msg} {
     buffer.append(logger_name.begin(), logger_name.end());
@@ -18,7 +18,7 @@ SPDLOG_INLINE log_msg_buffer<Alloc>::log_msg_buffer(const log_msg &orig_msg)
     update_string_views();
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE log_msg_buffer<Alloc>::log_msg_buffer(const log_msg_buffer &other)
     : log_msg{other} {
     buffer.append(logger_name.begin(), logger_name.end());
@@ -26,14 +26,14 @@ SPDLOG_INLINE log_msg_buffer<Alloc>::log_msg_buffer(const log_msg_buffer &other)
     update_string_views();
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE log_msg_buffer<Alloc>::log_msg_buffer(log_msg_buffer &&other) SPDLOG_NOEXCEPT
     : log_msg{other},
       buffer{std::move(other.buffer)} {
     update_string_views();
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE log_msg_buffer<Alloc> &log_msg_buffer<Alloc>::operator=(const log_msg_buffer &other) {
     log_msg::operator=(other);
     buffer.clear();
@@ -42,7 +42,7 @@ SPDLOG_INLINE log_msg_buffer<Alloc> &log_msg_buffer<Alloc>::operator=(const log_
     return *this;
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE log_msg_buffer<Alloc> &log_msg_buffer<Alloc>::operator=(log_msg_buffer &&other)
     SPDLOG_NOEXCEPT {
     log_msg::operator=(other);
@@ -51,7 +51,7 @@ SPDLOG_INLINE log_msg_buffer<Alloc> &log_msg_buffer<Alloc>::operator=(log_msg_bu
     return *this;
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void log_msg_buffer<Alloc>::update_string_views() {
     logger_name = string_view_t{buffer.data(), logger_name.size()};
     payload = string_view_t{buffer.data() + logger_name.size(), payload.size()};

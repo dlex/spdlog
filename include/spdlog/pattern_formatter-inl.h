@@ -39,7 +39,7 @@ namespace details {
 // name & level pattern appender
 ///////////////////////////////////////////////////////////////////////
 
-template <template <typename> class Alloc>
+template <class Alloc>
 class scoped_padder {
 public:
     scoped_padder(size_t wrapped_size, const padding_info &padinfo, basic_memory_buf_t<Alloc> &dest)
@@ -87,7 +87,7 @@ private:
     string_view_t spaces_{"                                                                ", 64};
 };
 
-template <template <typename> class Alloc>
+template <class Alloc>
 struct null_scoped_padder {
     null_scoped_padder(size_t /*wrapped_size*/,
                        const padding_info & /*padinfo*/,
@@ -99,7 +99,7 @@ struct null_scoped_padder {
     }
 };
 
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class name_formatter final : public flag_formatter<Alloc> {
 public:
     explicit name_formatter(padding_info padinfo)
@@ -114,7 +114,7 @@ public:
 };
 
 // log level appender
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class level_formatter final : public flag_formatter<Alloc> {
 public:
     explicit level_formatter(padding_info padinfo)
@@ -130,7 +130,7 @@ public:
 };
 
 // short log level appender
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class short_level_formatter final : public flag_formatter<Alloc> {
 public:
     explicit short_level_formatter(padding_info padinfo)
@@ -156,7 +156,7 @@ static int to12h(const tm &t) { return t.tm_hour > 12 ? t.tm_hour - 12 : t.tm_ho
 // Abbreviated weekday name
 static std::array<const char *, 7> days{{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}};
 
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class a_formatter final : public flag_formatter<Alloc> {
 public:
     explicit a_formatter(padding_info padinfo)
@@ -175,7 +175,7 @@ public:
 static std::array<const char *, 7> full_days{
     {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}};
 
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class A_formatter : public flag_formatter<Alloc> {
 public:
     explicit A_formatter(padding_info padinfo)
@@ -194,7 +194,7 @@ public:
 static const std::array<const char *, 12> months{
     {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}};
 
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class b_formatter final : public flag_formatter<Alloc> {
 public:
     explicit b_formatter(padding_info padinfo)
@@ -214,7 +214,7 @@ static const std::array<const char *, 12> full_months{{"January", "February", "M
                                                        "May", "June", "July", "August", "September",
                                                        "October", "November", "December"}};
 
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class B_formatter final : public flag_formatter<Alloc> {
 public:
     explicit B_formatter(padding_info padinfo)
@@ -230,7 +230,7 @@ public:
 };
 
 // Date and time representation (Thu Aug 23 15:35:46 2014)
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class c_formatter final : public flag_formatter<Alloc> {
 public:
     explicit c_formatter(padding_info padinfo)
@@ -261,7 +261,7 @@ public:
 };
 
 // year - 2 digit
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class C_formatter final : public flag_formatter<Alloc> {
 public:
     explicit C_formatter(padding_info padinfo)
@@ -277,7 +277,7 @@ public:
 };
 
 // Short MM/DD/YY date, equivalent to %m/%d/%y 08/23/01
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class D_formatter final : public flag_formatter<Alloc> {
 public:
     explicit D_formatter(padding_info padinfo)
@@ -298,7 +298,7 @@ public:
 };
 
 // year - 4 digit
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class Y_formatter final : public flag_formatter<Alloc> {
 public:
     explicit Y_formatter(padding_info padinfo)
@@ -314,7 +314,7 @@ public:
 };
 
 // month 1-12
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class m_formatter final : public flag_formatter<Alloc> {
 public:
     explicit m_formatter(padding_info padinfo)
@@ -330,7 +330,7 @@ public:
 };
 
 // day of month 1-31
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class d_formatter final : public flag_formatter<Alloc> {
 public:
     explicit d_formatter(padding_info padinfo)
@@ -346,7 +346,7 @@ public:
 };
 
 // hours in 24 format 0-23
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class H_formatter final : public flag_formatter<Alloc> {
 public:
     explicit H_formatter(padding_info padinfo)
@@ -362,7 +362,7 @@ public:
 };
 
 // hours in 12 format 1-12
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class I_formatter final : public flag_formatter<Alloc> {
 public:
     explicit I_formatter(padding_info padinfo)
@@ -378,7 +378,7 @@ public:
 };
 
 // minutes 0-59
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class M_formatter final : public flag_formatter<Alloc> {
 public:
     explicit M_formatter(padding_info padinfo)
@@ -394,7 +394,7 @@ public:
 };
 
 // seconds 0-59
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class S_formatter final : public flag_formatter<Alloc> {
 public:
     explicit S_formatter(padding_info padinfo)
@@ -410,7 +410,7 @@ public:
 };
 
 // milliseconds
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class e_formatter final : public flag_formatter<Alloc> {
 public:
     explicit e_formatter(padding_info padinfo)
@@ -427,7 +427,7 @@ public:
 };
 
 // microseconds
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class f_formatter final : public flag_formatter<Alloc> {
 public:
     explicit f_formatter(padding_info padinfo)
@@ -445,7 +445,7 @@ public:
 };
 
 // nanoseconds
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class F_formatter final : public flag_formatter<Alloc> {
 public:
     explicit F_formatter(padding_info padinfo)
@@ -462,7 +462,7 @@ public:
 };
 
 // seconds since epoch
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class E_formatter final : public flag_formatter<Alloc> {
 public:
     explicit E_formatter(padding_info padinfo)
@@ -480,7 +480,7 @@ public:
 };
 
 // AM/PM
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class p_formatter final : public flag_formatter<Alloc> {
 public:
     explicit p_formatter(padding_info padinfo)
@@ -496,7 +496,7 @@ public:
 };
 
 // 12 hour clock 02:55:02 pm
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class r_formatter final : public flag_formatter<Alloc> {
 public:
     explicit r_formatter(padding_info padinfo)
@@ -519,7 +519,7 @@ public:
 };
 
 // 24-hour HH:MM time, equivalent to %H:%M
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class R_formatter final : public flag_formatter<Alloc> {
 public:
     explicit R_formatter(padding_info padinfo)
@@ -538,7 +538,7 @@ public:
 };
 
 // ISO 8601 time format (HH:MM:SS), equivalent to %H:%M:%S
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class T_formatter final : public flag_formatter<Alloc> {
 public:
     explicit T_formatter(padding_info padinfo)
@@ -559,7 +559,7 @@ public:
 };
 
 // ISO 8601 offset from UTC in timezone (+-HH:MM)
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class z_formatter final : public flag_formatter<Alloc> {
 public:
     explicit z_formatter(padding_info padinfo)
@@ -604,7 +604,7 @@ private:
 };
 
 // Thread id
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class t_formatter final : public flag_formatter<Alloc> {
 public:
     explicit t_formatter(padding_info padinfo)
@@ -620,7 +620,7 @@ public:
 };
 
 // Current pid
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class pid_formatter final : public flag_formatter<Alloc> {
 public:
     explicit pid_formatter(padding_info padinfo)
@@ -636,7 +636,7 @@ public:
     }
 };
 
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class v_formatter final : public flag_formatter<Alloc> {
 public:
     explicit v_formatter(padding_info padinfo)
@@ -650,7 +650,7 @@ public:
     }
 };
 
-template <template <typename> class Alloc>
+template <class Alloc>
 class ch_formatter final : public flag_formatter<Alloc> {
 public:
     explicit ch_formatter(char ch)
@@ -667,7 +667,7 @@ private:
 };
 
 // aggregate user chars to display as is
-template <template <typename> class Alloc>
+template <class Alloc>
 class aggregate_formatter final : public flag_formatter<Alloc> {
 public:
     aggregate_formatter() = default;
@@ -684,7 +684,7 @@ private:
 };
 
 // mark the color range. expect it to be in the form of "%^colored text%$"
-template <template <typename> class Alloc>
+template <class Alloc>
 class color_start_formatter final : public flag_formatter<Alloc> {
 public:
     explicit color_start_formatter(padding_info padinfo)
@@ -697,7 +697,7 @@ public:
     }
 };
 
-template <template <typename> class Alloc>
+template <class Alloc>
 class color_stop_formatter final : public flag_formatter<Alloc> {
 public:
     explicit color_stop_formatter(padding_info padinfo)
@@ -711,7 +711,7 @@ public:
 };
 
 // print source location
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class source_location_formatter final : public flag_formatter<Alloc> {
 public:
     explicit source_location_formatter(padding_info padinfo)
@@ -742,7 +742,7 @@ public:
 };
 
 // print source filename
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class source_filename_formatter final : public flag_formatter<Alloc> {
 public:
     explicit source_filename_formatter(padding_info padinfo)
@@ -762,7 +762,7 @@ public:
     }
 };
 
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class short_filename_formatter final : public flag_formatter<Alloc> {
 public:
     explicit short_filename_formatter(padding_info padinfo)
@@ -805,7 +805,7 @@ public:
     }
 };
 
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class source_linenum_formatter final : public flag_formatter<Alloc> {
 public:
     explicit source_linenum_formatter(padding_info padinfo)
@@ -826,7 +826,7 @@ public:
 };
 
 // print source funcname
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class source_funcname_formatter final : public flag_formatter<Alloc> {
 public:
     explicit source_funcname_formatter(padding_info padinfo)
@@ -847,9 +847,7 @@ public:
 };
 
 // print elapsed time since last message
-template <template <template <typename> class> class ScopedPadder,
-          typename Units,
-          template <typename> class Alloc>
+template <template <typename> class ScopedPadder, typename Units, class Alloc>
 class elapsed_formatter final : public flag_formatter<Alloc> {
 public:
     using DurationUnits = Units;
@@ -877,7 +875,7 @@ private:
 // Class for formatting Mapped Diagnostic Context (MDC) in log messages.
 // Example: [logger-name] [info] [mdc_key_1:mdc_value_1 mdc_key_2:mdc_value_2] some message
 #ifndef SPDLOG_NO_TLS
-template <template <template <typename> class> class ScopedPadder, template <typename> class Alloc>
+template <template <typename> class ScopedPadder, class Alloc>
 class mdc_formatter : public flag_formatter<Alloc> {
 public:
     explicit mdc_formatter(padding_info padinfo)
@@ -921,7 +919,7 @@ public:
 
 // Full info formatter
 // pattern: [%Y-%m-%d %H:%M:%S.%e] [%n] [%l] [%s:%#] %v
-template <template <typename> class Alloc>
+template <class Alloc>
 class full_formatter final : public flag_formatter<Alloc> {
 public:
     explicit full_formatter(padding_info padinfo)
@@ -1023,7 +1021,7 @@ private:
 
 }  // namespace details
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE basic_pattern_formatter<Alloc>::basic_pattern_formatter(
     std::string pattern,
     pattern_time_type time_type,
@@ -1040,7 +1038,7 @@ SPDLOG_INLINE basic_pattern_formatter<Alloc>::basic_pattern_formatter(
 }
 
 // use by default full formatter for if pattern is not given
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE basic_pattern_formatter<Alloc>::basic_pattern_formatter(pattern_time_type time_type,
                                                                       std::string eol)
     : pattern_("%+"),
@@ -1053,7 +1051,7 @@ SPDLOG_INLINE basic_pattern_formatter<Alloc>::basic_pattern_formatter(pattern_ti
         details::make_unique<details::full_formatter<Alloc>>(details::padding_info{}));
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE std::unique_ptr<basic_formatter<Alloc>> basic_pattern_formatter<Alloc>::clone()
     const {
     custom_flags cloned_custom_formatters;
@@ -1070,7 +1068,7 @@ SPDLOG_INLINE std::unique_ptr<basic_formatter<Alloc>> basic_pattern_formatter<Al
 #endif
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_pattern_formatter<Alloc>::format(const details::log_msg &msg,
                                                           basic_memory_buf_t<Alloc> &dest) {
     if (need_localtime_) {
@@ -1089,19 +1087,19 @@ SPDLOG_INLINE void basic_pattern_formatter<Alloc>::format(const details::log_msg
     details::fmt_helper::append_string_view(eol_, dest);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_pattern_formatter<Alloc>::set_pattern(std::string pattern) {
     pattern_ = std::move(pattern);
     need_localtime_ = false;
     compile_pattern_(pattern_);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_pattern_formatter<Alloc>::need_localtime(bool need) {
     need_localtime_ = need;
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE std::tm basic_pattern_formatter<Alloc>::get_time_(const details::log_msg &msg) {
     if (pattern_time_type_ == pattern_time_type::local) {
         return details::os::localtime(log_clock::to_time_t(msg.time));
@@ -1109,8 +1107,8 @@ SPDLOG_INLINE std::tm basic_pattern_formatter<Alloc>::get_time_(const details::l
     return details::os::gmtime(log_clock::to_time_t(msg.time));
 }
 
-template <template <typename> class Alloc>
-template <template <template <typename> class> class Padder>
+template <class Alloc>
+template <template <typename> class Padder>
 SPDLOG_INLINE void basic_pattern_formatter<Alloc>::handle_flag_(char flag,
                                                                 details::padding_info padding) {
     // process custom flags
@@ -1393,7 +1391,7 @@ SPDLOG_INLINE void basic_pattern_formatter<Alloc>::handle_flag_(char flag,
 // Extract given pad spec (e.g. %8X, %=8X, %-8!X, %8!X, %=8!X, %-8!X, %+8!X)
 // Advance the given it pass the end of the padding spec found (if any)
 // Return padding.
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE details::padding_info basic_pattern_formatter<Alloc>::handle_padspec_(
     std::string::const_iterator &it, std::string::const_iterator end) {
     using details::padding_info;
@@ -1439,7 +1437,7 @@ SPDLOG_INLINE details::padding_info basic_pattern_formatter<Alloc>::handle_padsp
     return details::padding_info{std::min<size_t>(width, max_width), side, truncate};
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void basic_pattern_formatter<Alloc>::compile_pattern_(const std::string &pattern) {
     auto end = pattern.end();
     std::unique_ptr<details::aggregate_formatter<Alloc>> user_chars;
