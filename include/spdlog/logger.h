@@ -47,7 +47,7 @@
 
 namespace spdlog {
 
-template <template <typename> class Alloc>
+template <class Alloc>
 class SPDLOG_API basic_logger {
 public:
     // Empty logger
@@ -371,10 +371,10 @@ protected:
     void err_handler_(const std::string &msg) const;
 };
 
-template <template <typename> class Alloc>
+template <class Alloc>
 void swap(basic_logger<Alloc> &a, basic_logger<Alloc> &b) noexcept;
 
-using logger = basic_logger<std::allocator>;
+using logger = basic_logger<default_allocator_t>;
 
 }  // namespace spdlog
 

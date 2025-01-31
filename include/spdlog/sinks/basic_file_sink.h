@@ -17,7 +17,7 @@ namespace sinks {
 /*
  * Trivial file sink with single file as target
  */
-template <typename Mutex, template <typename> class Alloc = std::allocator>
+template <typename Mutex, class Alloc = default_allocator_t>
 class basic_file_sink final : public base_sink<Mutex, Alloc> {
 public:
     explicit basic_file_sink(const filename_t &filename,

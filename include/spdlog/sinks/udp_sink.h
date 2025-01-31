@@ -33,7 +33,7 @@ struct udp_sink_config {
           server_port{port} {}
 };
 
-template <typename Mutex, template <typename> class Alloc = std::allocator>
+template <typename Mutex, class Alloc = default_allocator_t>
 class udp_sink : public spdlog::sinks::base_sink<Mutex, Alloc> {
 public:
     // host can be hostname or ip address

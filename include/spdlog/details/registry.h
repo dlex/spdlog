@@ -19,16 +19,16 @@
 #include <unordered_map>
 
 namespace spdlog {
-template <template <typename> class Alloc>
+template <class Alloc>
 class basic_logger;
 
-using logger = basic_logger<std::allocator>;
+using logger = basic_logger<default_allocator_t>;
 
 namespace details {
-template <template <typename> class Alloc>
+template <class Alloc>
 class basic_thread_pool;
 
-template <template <typename> class Alloc = std::allocator>
+template <class Alloc = default_allocator_t>
 class SPDLOG_API registry {
 public:
     using log_levels = std::unordered_map<std::string, level::level_enum>;

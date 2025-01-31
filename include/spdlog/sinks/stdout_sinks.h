@@ -17,7 +17,7 @@ namespace spdlog {
 
 namespace sinks {
 
-template <typename ConsoleMutex, template <typename> class Alloc = std::allocator>
+template <typename ConsoleMutex, class Alloc = default_allocator_t>
 class stdout_sink_base : public sink<Alloc> {
 public:
     using mutex_t = typename ConsoleMutex::mutex_t;
@@ -45,13 +45,13 @@ protected:
 #endif  // WIN32
 };
 
-template <typename ConsoleMutex, template <typename> class Alloc = std::allocator>
+template <typename ConsoleMutex, class Alloc = default_allocator_t>
 class stdout_sink : public stdout_sink_base<ConsoleMutex, Alloc> {
 public:
     stdout_sink();
 };
 
-template <typename ConsoleMutex, template <typename> class Alloc = std::allocator>
+template <typename ConsoleMutex, class Alloc = default_allocator_t>
 class stderr_sink : public stdout_sink_base<ConsoleMutex, Alloc> {
 public:
     stderr_sink();

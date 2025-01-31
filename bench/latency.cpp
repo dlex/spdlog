@@ -210,7 +210,8 @@ int main(int argc, char *argv[]) {
 
     auto async_logger_tracing = std::make_shared<spdlog::async_logger>(
         "async_logger_tracing",
-        std::make_shared<spdlog::sinks::null_sink<spdlog::details::null_mutex, std::allocator>>(),
+        std::make_shared<
+            spdlog::sinks::null_sink<spdlog::details::null_mutex, std::allocator<char>>>(),
         std::move(tp), spdlog::async_overflow_policy::overrun_oldest);
     async_logger_tracing->enable_backtrace(32);
     benchmark::RegisterBenchmark("async_logger/tracing", bench_logger, async_logger_tracing)

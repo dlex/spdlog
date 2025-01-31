@@ -29,7 +29,7 @@ namespace spdlog {
 
 namespace sinks {
 
-template <typename ConsoleMutex, template <typename> class Alloc>
+template <typename ConsoleMutex, class Alloc>
 SPDLOG_INLINE stdout_sink_base<ConsoleMutex, Alloc>::stdout_sink_base(FILE *file)
     : mutex_(ConsoleMutex::mutex()),
       file_(file),
@@ -48,7 +48,7 @@ SPDLOG_INLINE stdout_sink_base<ConsoleMutex, Alloc>::stdout_sink_base(FILE *file
 #endif  // _WIN32
 }
 
-template <typename ConsoleMutex, template <typename> class Alloc>
+template <typename ConsoleMutex, class Alloc>
 SPDLOG_INLINE void stdout_sink_base<ConsoleMutex, Alloc>::log(const details::log_msg &msg) {
 #ifdef _WIN32
     if (handle_ == INVALID_HANDLE_VALUE) {
@@ -73,20 +73,20 @@ SPDLOG_INLINE void stdout_sink_base<ConsoleMutex, Alloc>::log(const details::log
     ::fflush(file_);  // flush every line to terminal
 }
 
-template <typename ConsoleMutex, template <typename> class Alloc>
+template <typename ConsoleMutex, class Alloc>
 SPDLOG_INLINE void stdout_sink_base<ConsoleMutex, Alloc>::flush() {
     std::lock_guard<mutex_t> lock(mutex_);
     fflush(file_);
 }
 
-template <typename ConsoleMutex, template <typename> class Alloc>
+template <typename ConsoleMutex, class Alloc>
 SPDLOG_INLINE void stdout_sink_base<ConsoleMutex, Alloc>::set_pattern(const std::string &pattern) {
     std::lock_guard<mutex_t> lock(mutex_);
     formatter_ = std::unique_ptr<spdlog::basic_formatter<Alloc>>(
         new basic_pattern_formatter<Alloc>(pattern));
 }
 
-template <typename ConsoleMutex, template <typename> class Alloc>
+template <typename ConsoleMutex, class Alloc>
 SPDLOG_INLINE void stdout_sink_base<ConsoleMutex, Alloc>::set_formatter(
     std::unique_ptr<spdlog::basic_formatter<Alloc>> sink_formatter) {
     std::lock_guard<mutex_t> lock(mutex_);
@@ -94,12 +94,12 @@ SPDLOG_INLINE void stdout_sink_base<ConsoleMutex, Alloc>::set_formatter(
 }
 
 // stdout sink
-template <typename ConsoleMutex, template <typename> class Alloc>
+template <typename ConsoleMutex, class Alloc>
 SPDLOG_INLINE stdout_sink<ConsoleMutex, Alloc>::stdout_sink()
     : stdout_sink_base<ConsoleMutex, Alloc>(stdout) {}
 
 // stderr sink
-template <typename ConsoleMutex, template <typename> class Alloc>
+template <typename ConsoleMutex, class Alloc>
 SPDLOG_INLINE stderr_sink<ConsoleMutex, Alloc>::stderr_sink()
     : stdout_sink_base<ConsoleMutex, Alloc>(stderr) {}
 

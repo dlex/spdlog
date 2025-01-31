@@ -30,7 +30,7 @@
 namespace spdlog {
 namespace details {
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE registry<Alloc>::registry()
     : formatter_(new basic_pattern_formatter<Alloc>()) {
 #ifndef SPDLOG_DISABLE_DEFAULT_LOGGER
@@ -51,24 +51,24 @@ SPDLOG_INLINE registry<Alloc>::registry()
 #endif  // SPDLOG_DISABLE_DEFAULT_LOGGER
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE registry<Alloc>::~registry() = default;
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::register_logger(
     std::shared_ptr<basic_logger<Alloc>> new_logger) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     register_logger_(std::move(new_logger));
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::register_or_replace(
     std::shared_ptr<basic_logger<Alloc>> new_logger) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     register_or_replace_(std::move(new_logger));
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::initialize_logger(
     std::shared_ptr<basic_logger<Alloc>> new_logger) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
@@ -94,7 +94,7 @@ SPDLOG_INLINE void registry<Alloc>::initialize_logger(
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE std::shared_ptr<basic_logger<Alloc>> registry<Alloc>::get(
     const std::string &logger_name) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
@@ -102,7 +102,7 @@ SPDLOG_INLINE std::shared_ptr<basic_logger<Alloc>> registry<Alloc>::get(
     return found == loggers_.end() ? nullptr : found->second;
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE std::shared_ptr<basic_logger<Alloc>> registry<Alloc>::default_logger() {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     return default_logger_;
@@ -112,14 +112,14 @@ SPDLOG_INLINE std::shared_ptr<basic_logger<Alloc>> registry<Alloc>::default_logg
 // To be used directly by the spdlog default api (e.g. spdlog::info)
 // This make the default API faster, but cannot be used concurrently with set_default_logger().
 // e.g do not call set_default_logger() from one thread while calling spdlog::info() from another.
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc> *registry<Alloc>::get_default_raw() {
     return default_logger_.get();
 }
 
 // set default logger.
 // default logger is stored in default_logger_ (for faster retrieval) and in the loggers_ map.
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::set_default_logger(
     std::shared_ptr<basic_logger<Alloc>> new_default_logger) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
@@ -129,20 +129,20 @@ SPDLOG_INLINE void registry<Alloc>::set_default_logger(
     default_logger_ = std::move(new_default_logger);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::set_tp(std::shared_ptr<basic_thread_pool<Alloc>> tp) {
     std::lock_guard<std::recursive_mutex> lock(tp_mutex_);
     tp_ = std::move(tp);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE std::shared_ptr<basic_thread_pool<Alloc>> registry<Alloc>::get_tp() {
     std::lock_guard<std::recursive_mutex> lock(tp_mutex_);
     return tp_;
 }
 
 // Set global formatter. Each sink in each logger will get a clone of this object
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::set_formatter(
     std::unique_ptr<basic_formatter<Alloc>> formatter) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
@@ -152,7 +152,7 @@ SPDLOG_INLINE void registry<Alloc>::set_formatter(
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::enable_backtrace(size_t n_messages) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     backtrace_n_messages_ = n_messages;
@@ -162,7 +162,7 @@ SPDLOG_INLINE void registry<Alloc>::enable_backtrace(size_t n_messages) {
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::disable_backtrace() {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     backtrace_n_messages_ = 0;
@@ -171,7 +171,7 @@ SPDLOG_INLINE void registry<Alloc>::disable_backtrace() {
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::set_level(level::level_enum log_level) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     for (auto &l : loggers_) {
@@ -180,7 +180,7 @@ SPDLOG_INLINE void registry<Alloc>::set_level(level::level_enum log_level) {
     global_log_level_ = log_level;
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::flush_on(level::level_enum log_level) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     for (auto &l : loggers_) {
@@ -189,7 +189,7 @@ SPDLOG_INLINE void registry<Alloc>::flush_on(level::level_enum log_level) {
     flush_level_ = log_level;
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::set_error_handler(err_handler handler) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     for (auto &l : loggers_) {
@@ -198,7 +198,7 @@ SPDLOG_INLINE void registry<Alloc>::set_error_handler(err_handler handler) {
     err_handler_ = std::move(handler);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::apply_all(
     const std::function<void(const std::shared_ptr<basic_logger<Alloc>>)> &fun) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
@@ -207,7 +207,7 @@ SPDLOG_INLINE void registry<Alloc>::apply_all(
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::flush_all() {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     for (auto &l : loggers_) {
@@ -215,7 +215,7 @@ SPDLOG_INLINE void registry<Alloc>::flush_all() {
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::drop(const std::string &logger_name) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     auto is_default_logger = default_logger_ && default_logger_->name() == logger_name;
@@ -225,7 +225,7 @@ SPDLOG_INLINE void registry<Alloc>::drop(const std::string &logger_name) {
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::drop_all() {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     loggers_.clear();
@@ -233,7 +233,7 @@ SPDLOG_INLINE void registry<Alloc>::drop_all() {
 }
 
 // clean all resources and threads started by the registry
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::shutdown() {
     {
         std::lock_guard<std::mutex> lock(flusher_mutex_);
@@ -248,18 +248,18 @@ SPDLOG_INLINE void registry<Alloc>::shutdown() {
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE std::recursive_mutex &registry<Alloc>::tp_mutex() {
     return tp_mutex_;
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::set_automatic_registration(bool automatic_registration) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     automatic_registration_ = automatic_registration;
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::set_levels(log_levels levels, level::level_enum *global_level) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     log_levels_ = std::move(levels);
@@ -276,13 +276,13 @@ SPDLOG_INLINE void registry<Alloc>::set_levels(log_levels levels, level::level_e
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE registry<Alloc> &registry<Alloc>::instance() {
     static registry s_instance;
     return s_instance;
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::apply_logger_env_levels(
     std::shared_ptr<basic_logger<Alloc>> new_logger) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
@@ -291,14 +291,14 @@ SPDLOG_INLINE void registry<Alloc>::apply_logger_env_levels(
     new_logger->set_level(new_level);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::throw_if_exists_(const std::string &logger_name) {
     if (loggers_.find(logger_name) != loggers_.end()) {
         throw_spdlog_ex("logger with name '" + logger_name + "' already exists");
     }
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::register_logger_(
     std::shared_ptr<basic_logger<Alloc>> new_logger) {
     auto logger_name = new_logger->name();
@@ -306,7 +306,7 @@ SPDLOG_INLINE void registry<Alloc>::register_logger_(
     loggers_[logger_name] = std::move(new_logger);
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 SPDLOG_INLINE void registry<Alloc>::register_or_replace_(
     std::shared_ptr<basic_logger<Alloc>> new_logger) {
     loggers_[new_logger->name()] = std::move(new_logger);

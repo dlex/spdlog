@@ -10,7 +10,7 @@ namespace spdlog {
 
 // Default logger factory-  creates synchronous loggers
 
-template <template <typename> class Alloc = std::allocator>
+template <class Alloc = default_allocator_t>
 struct basic_synchronous_factory {
     template <typename Sink, typename... SinkArgs>
     static std::shared_ptr<spdlog::basic_logger<Alloc>> create(std::string logger_name,
@@ -23,6 +23,6 @@ struct basic_synchronous_factory {
     }
 };
 
-using synchronous_factory = basic_synchronous_factory<std::allocator>;
+using synchronous_factory = basic_synchronous_factory<default_allocator_t>;
 
 }  // namespace spdlog

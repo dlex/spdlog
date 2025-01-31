@@ -18,12 +18,13 @@
 namespace spdlog {
 namespace sinks {
 
-template <class Mutex, template <typename> class Alloc = std::allocator>
+template <class Mutex, class Alloc = default_allocator_t>
 class test_sink : public base_sink<Mutex, Alloc> {
     const size_t lines_to_save = 100;
 
 public:
-    using string = std::basic_string<char, std::char_traits<char>, Alloc<char>>;
+    using string = std::basic_string<char, std::char_traits<char>, Alloc>;
+    using string_alloc = typename std::allocator_traits<Alloc>::template rebind_alloc<string>;
 
     size_t msg_counter() {
         std::lock_guard<Mutex> lock(base_sink<Mutex, Alloc>::mutex_);
@@ -41,7 +42,7 @@ public:
     }
 
     // return last output without the eol
-    std::vector<string, Alloc<string>> lines() {
+    std::vector<string, string_alloc> lines() {
         std::lock_guard<Mutex> lock(base_sink<Mutex, Alloc>::mutex_);
         return lines_;
     }
@@ -65,7 +66,7 @@ protected:
     size_t msg_counter_{0};
     size_t flush_counter_{0};
     std::chrono::milliseconds delay_{std::chrono::milliseconds::zero()};
-    std::vector<string, Alloc<string>> lines_;
+    std::vector<string, string_alloc> lines_;
 };
 
 using test_sink_mt = test_sink<std::mutex>;

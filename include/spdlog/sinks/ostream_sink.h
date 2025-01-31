@@ -12,7 +12,7 @@
 
 namespace spdlog {
 namespace sinks {
-template <typename Mutex, template <typename> class Alloc = std::allocator>
+template <typename Mutex, class Alloc = default_allocator_t>
 class ostream_sink final : public base_sink<Mutex, Alloc> {
 public:
     explicit ostream_sink(std::ostream &os, bool force_flush = false)

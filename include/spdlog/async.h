@@ -32,7 +32,7 @@ static const size_t default_async_q_size = 8192;
 // if a global thread pool doesn't already exist, create it with default queue
 // size of 8192 items and single thread.
 template <async_overflow_policy OverflowPolicy = async_overflow_policy::block,
-          template <typename> class Alloc = std::allocator>
+          class Alloc = default_allocator_t>
 struct async_factory_impl {
     template <typename Sink, typename... SinkArgs>
     static std::shared_ptr<basic_async_logger<Alloc>> create(std::string logger_name,
@@ -57,9 +57,9 @@ struct async_factory_impl {
     }
 };
 
-using async_factory = async_factory_impl<async_overflow_policy::block, std::allocator>;
+using async_factory = async_factory_impl<async_overflow_policy::block, default_allocator_t>;
 using async_factory_nonblock =
-    async_factory_impl<async_overflow_policy::overrun_oldest, std::allocator>;
+    async_factory_impl<async_overflow_policy::overrun_oldest, default_allocator_t>;
 
 template <typename Sink, typename... SinkArgs>
 inline std::shared_ptr<spdlog::logger> create_async(std::string logger_name,

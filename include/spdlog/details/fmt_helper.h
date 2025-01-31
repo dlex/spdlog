@@ -18,7 +18,7 @@ namespace spdlog {
 namespace details {
 namespace fmt_helper {
 
-template <template <typename> class Alloc>
+template <class Alloc>
 inline void append_string_view(spdlog::string_view_t view, basic_memory_buf_t<Alloc> &dest) {
     auto *buf_ptr = view.data();
     dest.append(buf_ptr, buf_ptr + view.size());
@@ -39,7 +39,7 @@ inline void append_int(T n, memory_buf_t &dest) {
     }
 }
 #else
-template <typename T, template <typename> class Alloc>
+template <typename T, class Alloc>
 inline void append_int(T n, basic_memory_buf_t<Alloc> &dest) {
     fmt::format_int i(n);
     dest.append(i.data(), i.data() + i.size());
@@ -82,7 +82,7 @@ inline unsigned int count_digits(T n) {
 #endif
 }
 
-template <template <typename> class Alloc>
+template <class Alloc>
 inline void pad2(int n, basic_memory_buf_t<Alloc> &dest) {
     if (n >= 0 && n < 100)  // 0-99
     {
@@ -94,7 +94,7 @@ inline void pad2(int n, basic_memory_buf_t<Alloc> &dest) {
     }
 }
 
-template <typename T, template <typename> class Alloc>
+template <typename T, class Alloc>
 inline void pad_uint(T n, unsigned int width, basic_memory_buf_t<Alloc> &dest) {
     static_assert(std::is_unsigned<T>::value, "pad_uint must get unsigned T");
     for (auto digits = count_digits(n); digits < width; digits++) {
@@ -103,7 +103,7 @@ inline void pad_uint(T n, unsigned int width, basic_memory_buf_t<Alloc> &dest) {
     append_int(n, dest);
 }
 
-template <typename T, template <typename> class Alloc>
+template <typename T, class Alloc>
 inline void pad3(T n, basic_memory_buf_t<Alloc> &dest) {
     static_assert(std::is_unsigned<T>::value, "pad3 must get unsigned T");
     if (n < 1000) {
@@ -116,12 +116,12 @@ inline void pad3(T n, basic_memory_buf_t<Alloc> &dest) {
     }
 }
 
-template <typename T, template <typename> class Alloc>
+template <typename T, class Alloc>
 inline void pad6(T n, basic_memory_buf_t<Alloc> &dest) {
     pad_uint(n, 6, dest);
 }
 
-template <typename T, template <typename> class Alloc>
+template <typename T, class Alloc>
 inline void pad9(T n, basic_memory_buf_t<Alloc> &dest) {
     pad_uint(n, 9, dest);
 }

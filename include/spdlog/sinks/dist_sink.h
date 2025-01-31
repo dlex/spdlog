@@ -19,7 +19,7 @@
 namespace spdlog {
 namespace sinks {
 
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 class dist_sink : public base_sink<Mutex, Alloc> {
 public:
     dist_sink() = default;
@@ -74,8 +74,8 @@ protected:
     std::vector<std::shared_ptr<sink<Alloc>>> sinks_;
 };
 
-using dist_sink_mt = dist_sink<std::mutex, std::allocator>;
-using dist_sink_st = dist_sink<details::null_mutex, std::allocator>;
+using dist_sink_mt = dist_sink<std::mutex, default_allocator_t>;
+using dist_sink_st = dist_sink<details::null_mutex, default_allocator_t>;
 
 }  // namespace sinks
 }  // namespace spdlog

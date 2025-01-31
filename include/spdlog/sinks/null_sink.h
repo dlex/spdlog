@@ -13,7 +13,7 @@
 namespace spdlog {
 namespace sinks {
 
-template <typename Mutex, template <typename> class Alloc = std::allocator>
+template <typename Mutex, class Alloc = default_allocator_t>
 class null_sink final : public base_sink<Mutex, Alloc> {
 protected:
     void sink_it_(const details::log_msg &) override {}

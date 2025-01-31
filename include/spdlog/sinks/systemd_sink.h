@@ -20,7 +20,7 @@ namespace sinks {
 /**
  * Sink that write to systemd journal using the `sd_journal_send()` library call.
  */
-template <typename Mutex, template <typename> class Alloc>
+template <typename Mutex, class Alloc>
 class systemd_sink : public base_sink<Mutex, Alloc> {
 public:
     systemd_sink(std::string ident = "", bool enable_formatting = false)
@@ -100,8 +100,8 @@ protected:
     void flush_() override {}
 };
 
-using systemd_sink_mt = systemd_sink<std::mutex, std::allocator>;
-using systemd_sink_st = systemd_sink<details::null_mutex, std::allocator>;
+using systemd_sink_mt = systemd_sink<std::mutex, default_allocator_t>;
+using systemd_sink_st = systemd_sink<details::null_mutex, default_allocator_t>;
 }  // namespace sinks
 
 // Create and register a syslog logger
