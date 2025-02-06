@@ -29,8 +29,10 @@ SPDLOG_INLINE rotating_file_sink<Mutex, Alloc>::rotating_file_sink(
     std::size_t max_size,
     std::size_t max_files,
     bool rotate_on_open,
-    const file_event_handlers &event_handlers)
-    : base_filename_(std::move(base_filename)),
+    const file_event_handlers &event_handlers,
+    Alloc alloc)
+    : base_sink<Mutex, Alloc>(alloc),
+      base_filename_(std::move(base_filename)),
       max_size_(max_size),
       max_files_(max_files),
       file_helper_{event_handlers} {
@@ -71,7 +73,7 @@ SPDLOG_INLINE filename_t rotating_file_sink<Mutex, Alloc>::filename() {
 
 template <typename Mutex, class Alloc>
 SPDLOG_INLINE void rotating_file_sink<Mutex, Alloc>::sink_it_(const details::log_msg &msg) {
-    basic_memory_buf_t<Alloc> formatted;
+    basic_memory_buf_t<Alloc> formatted(this->alloc_);
     base_sink<Mutex, Alloc>::formatter_->format(msg, formatted);
     auto new_size = current_size_ + formatted.size();
 
