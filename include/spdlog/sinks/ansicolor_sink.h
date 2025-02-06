@@ -25,7 +25,9 @@ template <typename ConsoleMutex, class Alloc = default_allocator_t>
 class ansicolor_sink : public sink<Alloc> {
 public:
     using mutex_t = typename ConsoleMutex::mutex_t;
-    ansicolor_sink(FILE *target_file, color_mode mode);
+    using allocator_type = Alloc;
+
+    ansicolor_sink(FILE *target_file, color_mode mode, Alloc alloc = Alloc());
     ~ansicolor_sink() override = default;
 
     ansicolor_sink(const ansicolor_sink &other) = delete;

@@ -29,8 +29,9 @@ namespace spdlog {
 namespace sinks {
 
 template <typename ConsoleMutex, class Alloc>
-SPDLOG_INLINE stdout_sink_base<ConsoleMutex, Alloc>::stdout_sink_base(FILE *file)
-    : mutex_(ConsoleMutex::mutex()),
+SPDLOG_INLINE stdout_sink_base<ConsoleMutex, Alloc>::stdout_sink_base(FILE *file, Alloc alloc)
+    : sink<Alloc>(alloc),
+      mutex_(ConsoleMutex::mutex()),
       file_(file),
       formatter_(details::make_unique<spdlog::basic_pattern_formatter<Alloc>>()) {
 #ifdef _WIN32
@@ -65,7 +66,7 @@ SPDLOG_INLINE void stdout_sink_base<ConsoleMutex, Alloc>::log(const details::log
     }
 #else
     std::lock_guard<mutex_t> lock(mutex_);
-    basic_memory_buf_t<Alloc> formatted;
+    basic_memory_buf_t<Alloc> formatted(this->alloc_);
     formatter_->format(msg, formatted);
     ::fwrite(formatted.data(), sizeof(char), formatted.size(), file_);
 #endif                // WIN32

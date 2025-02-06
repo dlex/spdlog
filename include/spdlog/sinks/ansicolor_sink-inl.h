@@ -15,8 +15,10 @@ namespace sinks {
 
 template <typename ConsoleMutex, class Alloc>
 SPDLOG_INLINE ansicolor_sink<ConsoleMutex, Alloc>::ansicolor_sink(FILE *target_file,
-                                                                  color_mode mode)
-    : target_file_(target_file),
+                                                                  color_mode mode,
+                                                                  Alloc alloc)
+    : sink<Alloc>(alloc),
+      target_file_(target_file),
       mutex_(ConsoleMutex::mutex()),
       formatter_(details::make_unique<spdlog::basic_pattern_formatter<Alloc>>())
 
@@ -45,7 +47,7 @@ SPDLOG_INLINE void ansicolor_sink<ConsoleMutex, Alloc>::log(const details::log_m
     std::lock_guard<mutex_t> lock(mutex_);
     msg.color_range_start = 0;
     msg.color_range_end = 0;
-    basic_memory_buf_t<Alloc> formatted;
+    basic_memory_buf_t<Alloc> formatted(this->alloc_);
     formatter_->format(msg, formatted);
     if (should_do_colors_ && msg.color_range_end > msg.color_range_start) {
         // before color range
