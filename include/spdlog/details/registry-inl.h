@@ -36,13 +36,16 @@ SPDLOG_INLINE registry<Alloc>::registry()
 #ifndef SPDLOG_DISABLE_DEFAULT_LOGGER
     // create default logger (ansicolor_stdout_sink_mt or wincolor_stdout_sink_mt in windows).
     #ifdef _WIN32
-    auto color_sink = std::make_shared<sinks::wincolor_stdout_sink_mt>();
+    auto color_sink =
+        std::make_shared<sinks::wincolor_stdout_sink<details::console_mutex, Alloc>>();
     #else
-    auto color_sink = std::make_shared<sinks::ansicolor_stdout_sink_mt>();
+    auto color_sink =
+        std::make_shared<sinks::ansicolor_stdout_sink<details::console_mutex, Alloc>>();
     #endif
 
     const char *default_logger_name = "";
-    default_logger_ = std::make_shared<spdlog::logger>(default_logger_name, std::move(color_sink));
+    default_logger_ =
+        std::make_shared<spdlog::basic_logger<Alloc>>(default_logger_name, std::move(color_sink));
     loggers_[default_logger_name] = default_logger_;
 
 #endif  // SPDLOG_DISABLE_DEFAULT_LOGGER
