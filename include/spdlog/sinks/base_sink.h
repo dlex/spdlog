@@ -18,8 +18,9 @@ namespace sinks {
 template <typename Mutex, class Alloc>
 class SPDLOG_API base_sink : public sink<Alloc> {
 public:
-    base_sink();
-    explicit base_sink(std::unique_ptr<spdlog::basic_formatter<Alloc>> formatter);
+    explicit base_sink(Alloc alloc = Alloc());
+    explicit base_sink(std::unique_ptr<spdlog::basic_formatter<Alloc>> formatter,
+                       Alloc alloc = Alloc());
     ~base_sink() override = default;
 
     base_sink(const base_sink &) = delete;
