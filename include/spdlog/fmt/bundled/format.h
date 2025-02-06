@@ -884,7 +884,13 @@ class basic_memory_buffer : public detail::buffer<T> {
  private:
   // Move data from other to this buffer.
   FMT_CONSTEXPR20 void move(basic_memory_buffer& other) {
-    alloc_ = std::move(other.alloc_);
+    if FMT_IF_CONSTEXPR (std::allocator_traits<Allocator>::propagate_on_container_move_assignment::value) {
+      alloc_ = std::move(other.alloc_);
+    } else {
+      if ( alloc_ != other.alloc_ ) {
+        FMT_THROW(std::logic_error("basic_memory_buffer can't be moved across different allocators")); 
+      }
+    }
     T* data = other.data();
     size_t size = other.size(), capacity = other.capacity();
     if (data == other.store_) {
