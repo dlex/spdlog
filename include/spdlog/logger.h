@@ -47,7 +47,8 @@
 
 namespace spdlog {
 
-template <template <typename> class Alloc>
+
+template <class Alloc>
 class SPDLOG_API basic_logger {
 public:
     // Empty logger
