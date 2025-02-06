@@ -23,7 +23,9 @@ namespace sinks {
 template <typename ConsoleMutex, class Alloc = default_allocator_t>
 class wincolor_sink : public sink<Alloc> {
 public:
-    wincolor_sink(void *out_handle, color_mode mode);
+    using allocator_type = Alloc;
+
+    wincolor_sink(void *out_handle, color_mode mode, Alloc alloc = Alloc());
     ~wincolor_sink() override;
 
     wincolor_sink(const wincolor_sink &other) = delete;
