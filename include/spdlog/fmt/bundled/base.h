@@ -138,6 +138,12 @@
 #  define FMT_CONSTEXPR20
 #endif
 
+#ifdef __cpp_if_constexpr
+#  define FMT_IF_CONSTEXPR constexpr
+#else
+#  define FMT_IF_CONSTEXPR
+#endif
+
 #if defined(FMT_USE_NONTYPE_TEMPLATE_ARGS)
 // Use the provided definition.
 #elif defined(__NVCOMPILER)
