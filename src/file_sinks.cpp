@@ -18,3 +18,15 @@ template class SPDLOG_API spdlog::sinks::basic_file_sink<spdlog::details::null_m
 #include <spdlog/sinks/rotating_file_sink-inl.h>
 template class SPDLOG_API spdlog::sinks::rotating_file_sink<std::mutex>;
 template class SPDLOG_API spdlog::sinks::rotating_file_sink<spdlog::details::null_mutex>;
+
+#ifdef SPDLOG_POLYMORPHIC_ALLOCATORS
+    #include <memory_resource>
+template class SPDLOG_API
+    spdlog::sinks::basic_file_sink<std::mutex, std::pmr::polymorphic_allocator<char>>;
+template class SPDLOG_API spdlog::sinks::basic_file_sink<spdlog::details::null_mutex,
+                                                         std::pmr::polymorphic_allocator<char>>;
+template class SPDLOG_API
+    spdlog::sinks::rotating_file_sink<std::mutex, std::pmr::polymorphic_allocator<char>>;
+template class SPDLOG_API spdlog::sinks::rotating_file_sink<spdlog::details::null_mutex,
+                                                            std::pmr::polymorphic_allocator<char>>;
+#endif
