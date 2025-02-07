@@ -73,7 +73,7 @@ SPDLOG_INLINE filename_t rotating_file_sink<Mutex, Alloc>::filename() {
 
 template <typename Mutex, class Alloc>
 SPDLOG_INLINE void rotating_file_sink<Mutex, Alloc>::sink_it_(const details::log_msg &msg) {
-    basic_memory_buf_t<Alloc> formatted(this->alloc_);
+    basic_memory_buf_t<Alloc> formatted(this->get_allocator());
     base_sink<Mutex, Alloc>::formatter_->format(msg, formatted);
     auto new_size = current_size_ + formatted.size();
 

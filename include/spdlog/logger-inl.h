@@ -18,43 +18,43 @@ namespace spdlog {
 // public methods
 template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc>::basic_logger(const basic_logger &other)
-    : name_(other.name_),
+    : Alloc(std::allocator_traits<Alloc>::select_on_container_copy_construction(other)),
+      name_(other.name_),
       sinks_(other.sinks_),
       level_(other.level_.load(std::memory_order_relaxed)),
       flush_level_(other.flush_level_.load(std::memory_order_relaxed)),
       custom_err_handler_(other.custom_err_handler_),
-      tracer_(other.tracer_),
-      alloc_(std::allocator_traits<Alloc>::select_on_container_copy_construction(other.alloc_)) {}
+      tracer_(other.tracer_) {}
 
 template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc>::basic_logger(const basic_logger &other, Alloc alloc)
-    : name_(other.name_),
+    : Alloc(alloc),
+      name_(other.name_),
       sinks_(other.sinks_),
       level_(other.level_.load(std::memory_order_relaxed)),
       flush_level_(other.flush_level_.load(std::memory_order_relaxed)),
       custom_err_handler_(other.custom_err_handler_),
-      tracer_(other.tracer_),
-      alloc_(alloc) {}
+      tracer_(other.tracer_) {}
 
 template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc>::basic_logger(basic_logger &&other) SPDLOG_NOEXCEPT
-    : name_(std::move(other.name_)),
+    : Alloc(std::move(other)),
+      name_(std::move(other.name_)),
       sinks_(std::move(other.sinks_)),
       level_(other.level_.load(std::memory_order_relaxed)),
       flush_level_(other.flush_level_.load(std::memory_order_relaxed)),
       custom_err_handler_(std::move(other.custom_err_handler_)),
-      tracer_(std::move(other.tracer_)),
-      alloc_(std::move(other.alloc_)) {}
+      tracer_(std::move(other.tracer_)) {}
 
 template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc>::basic_logger(basic_logger &&other, Alloc alloc) SPDLOG_NOEXCEPT
-    : name_(std::move(other.name_)),
+    : Alloc(alloc),
+      name_(std::move(other.name_)),
       sinks_(std::move(other.sinks_)),
       level_(other.level_.load(std::memory_order_relaxed)),
       flush_level_(other.flush_level_.load(std::memory_order_relaxed)),
       custom_err_handler_(std::move(other.custom_err_handler_)),
-      tracer_(std::move(other.tracer_)),
-      alloc_(alloc) {}
+      tracer_(std::move(other.tracer_)) {}
 
 template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc> &basic_logger<Alloc>::operator=(basic_logger other)

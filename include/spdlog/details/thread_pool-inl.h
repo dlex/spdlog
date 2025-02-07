@@ -23,8 +23,8 @@ SPDLOG_INLINE basic_thread_pool<Alloc>::basic_thread_pool(size_t q_max_items,
                                                           std::function<void()> on_thread_start,
                                                           std::function<void()> on_thread_stop,
                                                           Alloc alloc)
-    : q_(q_max_items),
-      alloc_(alloc) {
+    : Alloc(alloc),
+      q_(q_max_items) {
     if (threads_n == 0 || threads_n > 1000) {
         throw_spdlog_ex(
             "spdlog::basic_thread_pool(): invalid threads_n param (valid "
@@ -132,7 +132,7 @@ void SPDLOG_INLINE basic_thread_pool<Alloc>::worker_loop_() {
 // was received)
 template <class Alloc>
 bool SPDLOG_INLINE basic_thread_pool<Alloc>::process_next_msg_() {
-    async_msg<Alloc> incoming_async_msg(alloc_);
+    async_msg<Alloc> incoming_async_msg(*this);
     q_.dequeue(incoming_async_msg);
 
     switch (incoming_async_msg.msg_type) {

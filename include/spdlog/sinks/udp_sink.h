@@ -47,7 +47,7 @@ public:
 
 protected:
     void sink_it_(const spdlog::details::log_msg &msg) override {
-        spdlog::basic_memory_buf_t<Alloc> formatted(this->alloc_);
+        spdlog::basic_memory_buf_t<Alloc> formatted(this->get_allocator());
         spdlog::sinks::base_sink<Mutex, Alloc>::formatter_->format(msg, formatted);
         client_.send(formatted.data(), formatted.size());
     }

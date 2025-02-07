@@ -66,7 +66,7 @@ SPDLOG_INLINE void stdout_sink_base<ConsoleMutex, Alloc>::log(const details::log
     }
 #else
     std::lock_guard<mutex_t> lock(mutex_);
-    basic_memory_buf_t<Alloc> formatted(this->alloc_);
+    basic_memory_buf_t<Alloc> formatted(this->get_allocator());
     formatter_->format(msg, formatted);
     ::fwrite(formatted.data(), sizeof(char), formatted.size(), file_);
 #endif                // WIN32

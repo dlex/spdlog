@@ -71,7 +71,7 @@ struct async_msg : log_msg_buffer<Alloc> {
 };
 
 template <class Alloc>
-class SPDLOG_API basic_thread_pool {
+class SPDLOG_API basic_thread_pool : private Alloc {
 public:
     using item_type = async_msg<Alloc>;
     using q_type = details::mpmc_blocking_queue<item_type>;
@@ -108,7 +108,6 @@ private:
     q_type q_;
 
     std::vector<std::thread> threads_;
-    Alloc alloc_;
 
     void post_async_msg_(async_msg<Alloc> &&new_msg, async_overflow_policy overflow_policy);
     void worker_loop_();

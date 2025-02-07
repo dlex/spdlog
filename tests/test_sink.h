@@ -53,7 +53,7 @@ public:
 
 protected:
     void sink_it_(const details::log_msg &msg) override {
-        basic_memory_buf_t<Alloc> formatted(this->alloc_);
+        basic_memory_buf_t<Alloc> formatted(this->get_allocator());
         base_sink<Mutex, Alloc>::formatter_->format(msg, formatted);
         // save the line without the eol
         auto eol_len = strlen(details::os::default_eol);

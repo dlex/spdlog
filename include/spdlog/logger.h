@@ -49,20 +49,20 @@ namespace spdlog {
 
 
 template <class Alloc>
-class SPDLOG_API basic_logger {
+class SPDLOG_API basic_logger : private Alloc {
 public:
     // Empty logger
     explicit basic_logger(std::string name, Alloc alloc = Alloc())
-        : name_(std::move(name)),
-          sinks_(),
-          alloc_(alloc) {}
+        : Alloc(alloc),
+          name_(std::move(name)),
+          sinks_() {}
 
     // Logger with range on sinks
     template <typename It>
     basic_logger(std::string name, It begin, It end, Alloc alloc = Alloc())
-        : name_(std::move(name)),
-          sinks_(begin, end),
-          alloc_(alloc) {}
+        : Alloc(alloc),
+          name_(std::move(name)),
+          sinks_(begin, end) {}
 
     // Logger with single sink
     basic_logger(std::string name, sink_ptr<Alloc> single_sink, Alloc alloc = Alloc())
@@ -317,7 +317,6 @@ protected:
     spdlog::level_t flush_level_{level::off};
     err_handler custom_err_handler_{nullptr};
     details::backtracer<Alloc> tracer_;
-    Alloc alloc_;
 
     // common implementation for after templated public api has been resolved
     template <typename... Args>
@@ -328,7 +327,7 @@ protected:
             return;
         }
         SPDLOG_TRY {
-            basic_memory_buf_t<Alloc> buf(alloc_);
+            basic_memory_buf_t<Alloc> buf(*this);
 #ifdef SPDLOG_USE_STD_FORMAT
             fmt_lib::vformat_to(std::back_inserter(buf), fmt, fmt_lib::make_format_args(args...));
 #else
