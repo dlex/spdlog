@@ -42,7 +42,7 @@ SPDLOG_INLINE const filename_t &basic_file_sink<Mutex, Alloc>::filename() const 
 
 template <typename Mutex, class Alloc>
 SPDLOG_INLINE void basic_file_sink<Mutex, Alloc>::sink_it_(const details::log_msg &msg) {
-    basic_memory_buf_t<Alloc> formatted(this->alloc_);
+    basic_memory_buf_t<Alloc> formatted(this->get_allocator());
     base_sink<Mutex, Alloc>::formatter_->format(msg, formatted);
     file_helper_.write(details::to_string_view(formatted));
 }

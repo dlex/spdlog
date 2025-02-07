@@ -10,7 +10,7 @@ namespace spdlog {
 
 namespace sinks {
 template <class Alloc>
-class SPDLOG_API sink {
+class SPDLOG_API sink : private Alloc {
 public:
     sink(const sink &other) = delete;
     sink(sink &&other) SPDLOG_NOEXCEPT = delete;
@@ -33,7 +33,6 @@ protected:
 
     // sink log level - default is all
     level_t level_{level::trace};
-    Alloc alloc_;
 };
 
 }  // namespace sinks

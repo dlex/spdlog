@@ -11,7 +11,7 @@
 
 template <class Alloc>
 SPDLOG_INLINE spdlog::sinks::sink<Alloc>::sink(Alloc alloc)
-    : alloc_(alloc) {}
+    : Alloc(alloc) {}
 
 template <class Alloc>
 SPDLOG_INLINE bool spdlog::sinks::sink<Alloc>::should_log(
@@ -31,5 +31,5 @@ SPDLOG_INLINE spdlog::level::level_enum spdlog::sinks::sink<Alloc>::level() cons
 
 template <class Alloc>
 SPDLOG_INLINE Alloc spdlog::sinks::sink<Alloc>::get_allocator() const {
-    return alloc_;
+    return *this;
 }

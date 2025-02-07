@@ -141,7 +141,7 @@ protected:
             file_helper_.open(filename, truncate_);
             rotation_tp_ = next_rotation_tp_();
         }
-        basic_memory_buf_t<Alloc> formatted(this->alloc_);
+        basic_memory_buf_t<Alloc> formatted(this->get_allocator());
         base_sink<Mutex, Alloc>::formatter_->format(msg, formatted);
         file_helper_.write(details::to_string_view(formatted));
 

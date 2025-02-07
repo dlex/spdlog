@@ -48,7 +48,7 @@ public:
 protected:
     void sink_it_(const details::log_msg &msg) override {
         string_view_t payload;
-        basic_memory_buf_t<Alloc> formatted(this->alloc_);
+        basic_memory_buf_t<Alloc> formatted(this->get_allocator());
         if (enable_formatting_) {
             base_sink<Mutex, Alloc>::formatter_->format(msg, formatted);
             payload = string_view_t(formatted.data(), formatted.size());
