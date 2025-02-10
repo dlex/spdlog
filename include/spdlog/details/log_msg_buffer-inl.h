@@ -51,9 +51,14 @@ SPDLOG_INLINE log_msg_buffer<Alloc>::log_msg_buffer(log_msg_buffer &&other) SPDL
 
 template <class Alloc>
 SPDLOG_INLINE log_msg_buffer<Alloc>::log_msg_buffer(log_msg_buffer &&other,
-                                                    Alloc alloc) SPDLOG_NOEXCEPT
-    : log_msg{other},
-      buffer{std::move(other.buffer), alloc} {
+                                                    Alloc alloc) SPDLOG_NOEXCEPT : log_msg{other},
+                                                                                   buffer{alloc} {
+    if (alloc == other.buffer.get_allocator()) {
+        buffer = std::move(other.buffer);
+    } else {
+        buffer.append(logger_name.begin(), logger_name.end());
+        buffer.append(payload.begin(), payload.end());
+    }
     update_string_views();
 }
 
