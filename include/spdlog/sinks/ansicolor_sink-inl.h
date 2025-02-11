@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "spdlog/common.h"
 #ifndef SPDLOG_HEADER_ONLY
     #include <spdlog/sinks/ansicolor_sink.h>
 #endif
@@ -127,13 +128,21 @@ SPDLOG_INLINE std::string ansicolor_sink<ConsoleMutex, Alloc>::to_string_(const 
 
 // ansicolor_stdout_sink
 template <typename ConsoleMutex, class Alloc>
-SPDLOG_INLINE ansicolor_stdout_sink<ConsoleMutex, Alloc>::ansicolor_stdout_sink(color_mode mode)
-    : ansicolor_sink<ConsoleMutex, Alloc>(stdout, mode) {}
+SPDLOG_INLINE ansicolor_stdout_sink<ConsoleMutex, Alloc>::ansicolor_stdout_sink(color_mode mode,
+                                                                                Alloc alloc)
+    : ansicolor_sink<ConsoleMutex, Alloc>(stdout, mode, alloc) {}
+template <typename ConsoleMutex, class Alloc>
+SPDLOG_INLINE ansicolor_stdout_sink<ConsoleMutex, Alloc>::ansicolor_stdout_sink(Alloc alloc)
+    : ansicolor_sink<ConsoleMutex, Alloc>(stdout, color_mode::automatic, alloc) {}
 
 // ansicolor_stderr_sink
 template <typename ConsoleMutex, class Alloc>
-SPDLOG_INLINE ansicolor_stderr_sink<ConsoleMutex, Alloc>::ansicolor_stderr_sink(color_mode mode)
-    : ansicolor_sink<ConsoleMutex, Alloc>(stderr, mode) {}
+SPDLOG_INLINE ansicolor_stderr_sink<ConsoleMutex, Alloc>::ansicolor_stderr_sink(color_mode mode,
+                                                                                Alloc alloc)
+    : ansicolor_sink<ConsoleMutex, Alloc>(stderr, mode, alloc) {}
+template <typename ConsoleMutex, class Alloc>
+SPDLOG_INLINE ansicolor_stderr_sink<ConsoleMutex, Alloc>::ansicolor_stderr_sink(Alloc alloc)
+    : ansicolor_sink<ConsoleMutex, Alloc>(stderr, color_mode::automatic, alloc) {}
 
 }  // namespace sinks
 }  // namespace spdlog
