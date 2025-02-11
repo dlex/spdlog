@@ -94,13 +94,15 @@ private:
 template <typename ConsoleMutex, class Alloc = default_allocator_t>
 class ansicolor_stdout_sink : public ansicolor_sink<ConsoleMutex, Alloc> {
 public:
-    explicit ansicolor_stdout_sink(color_mode mode = color_mode::automatic);
+    explicit ansicolor_stdout_sink(Alloc alloc = Alloc());
+    explicit ansicolor_stdout_sink(color_mode mode, Alloc alloc = Alloc());
 };
 
 template <typename ConsoleMutex, class Alloc = default_allocator_t>
 class ansicolor_stderr_sink : public ansicolor_sink<ConsoleMutex, Alloc> {
 public:
-    explicit ansicolor_stderr_sink(color_mode mode = color_mode::automatic);
+    explicit ansicolor_stderr_sink(Alloc alloc = Alloc());
+    explicit ansicolor_stderr_sink(color_mode mode, Alloc alloc = Alloc());
 };
 
 using ansicolor_stdout_sink_mt = ansicolor_stdout_sink<details::console_mutex>;
