@@ -122,6 +122,8 @@
 
 namespace spdlog {
 
+using default_allocator_t = std::allocator<char>;
+
 template <class Alloc>
 class basic_formatter;
 
@@ -141,7 +143,7 @@ using filename_t = std::string;
 #endif
 
 using log_clock = std::chrono::system_clock;
-template <class Alloc>
+template <class Alloc = default_allocator_t>
 using sink_ptr = std::shared_ptr<sinks::sink<Alloc>>;
 template <class Alloc>
 using sinks_init_list = std::initializer_list<sink_ptr<Alloc>>;
@@ -182,8 +184,6 @@ using string_view_t = fmt::basic_string_view<char>;
 
 template <class Alloc>
 using basic_memory_buf_t = fmt::basic_memory_buffer<char, 250, Alloc>;
-
-using default_allocator_t = std::allocator<char>;
 
 using memory_buf_t = basic_memory_buf_t<default_allocator_t>;
 
