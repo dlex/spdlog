@@ -42,8 +42,8 @@ TEST_CASE("polymorphic allocators") {
     using test_sink_pmr =
         spdlog::sinks::test_sink<std::mutex, std::pmr::polymorphic_allocator<char>>;
     auto test_sink = std::make_shared<test_sink_pmr>();
-    auto logger =
-        spdlog::basic_logger<std::pmr::polymorphic_allocator<char>>("orig", test_sink, alloc);
+    auto logger = spdlog::basic_logger<std::pmr::polymorphic_allocator<char>>(
+        std::pmr::string("orig"), test_sink, alloc);
     logger.set_pattern("%v");
 
     SECTION("just log") {
