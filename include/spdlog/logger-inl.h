@@ -32,7 +32,7 @@ SPDLOG_INLINE basic_logger<Alloc>::basic_logger(const basic_logger &other,
                                                 Alloc alloc_data)
     : Alloc(alloc_fmt_buf),
       name_(other.name_, alloc_data),
-      sinks_(other.sinks_),
+      sinks_(other.sinks_, alloc_data),
       level_(other.level_.load(std::memory_order_relaxed)),
       flush_level_(other.flush_level_.load(std::memory_order_relaxed)),
       custom_err_handler_(other.custom_err_handler_),
@@ -54,7 +54,7 @@ SPDLOG_INLINE basic_logger<Alloc>::basic_logger(basic_logger &&other,
                                                 Alloc alloc_data) SPDLOG_NOEXCEPT
     : Alloc(alloc_fmt_buf),
       name_(std::move(other.name_), alloc_data),
-      sinks_(std::move(other.sinks_)),
+      sinks_(std::move(other.sinks_), alloc_data),
       level_(other.level_.load(std::memory_order_relaxed)),
       flush_level_(other.flush_level_.load(std::memory_order_relaxed)),
       custom_err_handler_(std::move(other.custom_err_handler_)),
@@ -164,12 +164,14 @@ SPDLOG_INLINE level::level_enum basic_logger<Alloc>::flush_level() const {
 
 // sinks
 template <class Alloc>
-SPDLOG_INLINE const std::vector<sink_ptr<Alloc>> &basic_logger<Alloc>::sinks() const {
+SPDLOG_INLINE const typename basic_logger<Alloc>::template vector_type<sink_ptr<Alloc>> &
+basic_logger<Alloc>::sinks() const {
     return sinks_;
 }
 
 template <class Alloc>
-SPDLOG_INLINE std::vector<sink_ptr<Alloc>> &basic_logger<Alloc>::sinks() {
+SPDLOG_INLINE typename basic_logger<Alloc>::template vector_type<sink_ptr<Alloc>> &
+basic_logger<Alloc>::sinks() {
     return sinks_;
 }
 
