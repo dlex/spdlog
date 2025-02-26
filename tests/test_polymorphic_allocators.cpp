@@ -94,7 +94,21 @@ TEST_CASE("polymorphic allocators") {
                     "a very long logger name to defeat small buffer optimization in std::string",
                     alloc_data),
                 {test_sink, test_sink_2}, alloc_buf_fmt, alloc_data);
-            CHECK(mem_res_data.allocations == 1 + allocs_at_start);
+            CHECK(mem_res_data.allocations ==
+                  2 + allocs_at_start);  // name once and vector of sinks once
+            just_log(*test_sink_2, logger_2);
+        }
+
+        SECTION("create logger with vector of sinks") {
+            const auto allocs_at_start = mem_res_data.allocations;
+            auto logger_2 = spdlog::basic_logger<allocator>(
+                std::pmr::string(
+                    "a very long logger name to defeat small buffer optimization in std::string",
+                    alloc_data),
+                std::pmr::vector<spdlog::sink_ptr<allocator>>{{test_sink, test_sink_2}, alloc_data},
+                alloc_buf_fmt, alloc_data);
+            CHECK(mem_res_data.allocations ==
+                  2 + allocs_at_start);  // name once and vector of sinks once
             just_log(*test_sink_2, logger_2);
         }
 
