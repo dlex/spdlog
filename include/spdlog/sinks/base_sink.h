@@ -15,7 +15,7 @@
 
 namespace spdlog {
 namespace sinks {
-template <typename Mutex, class Alloc>
+template <typename Mutex, class Alloc = default_allocator_t>
 class SPDLOG_API base_sink : public sink<Alloc> {
 public:
     explicit base_sink(Alloc alloc = Alloc());

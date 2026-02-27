@@ -5,11 +5,12 @@
 
 #include <spdlog/details/log_msg.h>
 #include <spdlog/formatter.h>
+#include "spdlog/common.h"
 
 namespace spdlog {
 
 namespace sinks {
-template <class Alloc>
+template <class Alloc = default_allocator_t>
 class SPDLOG_API sink : private Alloc {
 public:
     sink(const sink &other) = delete;
