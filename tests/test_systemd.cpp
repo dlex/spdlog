@@ -1,5 +1,5 @@
 #include "includes.h"
-#include "spdlog/sinks/systemd_sink.h"
+#include "spudlog/sinks/systemd_sink.h"
 
 TEST_CASE("systemd", "[all]") {
     auto systemd_sink = std::make_shared<spdlog::sinks::systemd_sink_st>();

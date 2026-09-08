@@ -5,7 +5,7 @@
 #error Please define SPDLOG_COMPILED_LIB to compile this file.
 #endif
 
-#include <spdlog/async.h>
-#include <spdlog/async_logger-inl.h>
-#include <spdlog/details/periodic_worker-inl.h>
-#include <spdlog/details/thread_pool-inl.h>
+#include <spudlog/async.h>
+#include <spudlog/async_logger-inl.h>
+#include <spudlog/details/periodic_worker-inl.h>
+#include <spudlog/details/thread_pool-inl.h>

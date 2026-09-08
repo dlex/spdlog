@@ -6,16 +6,16 @@
 //
 // bench.cpp : spdlog benchmarks
 //
-#include "spdlog/spdlog.h"
-#include "spdlog/async.h"
-#include "spdlog/sinks/basic_file_sink.h"
+#include "spudlog/spdlog.h"
+#include "spudlog/async.h"
+#include "spudlog/sinks/basic_file_sink.h"
 
 #if defined(SPDLOG_USE_STD_FORMAT)
 #include <format>
 #elif defined(SPDLOG_FMT_EXTERNAL)
 #include <fmt/format.h>
 #else
-#include "spdlog/fmt/bundled/format.h"
+#include "spudlog/fmt/bundled/format.h"
 #endif
 
 #include "utils.h"

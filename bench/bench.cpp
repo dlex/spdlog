@@ -6,18 +6,18 @@
 //
 // bench.cpp : spdlog benchmarks
 //
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/daily_file_sink.h"
-#include "spdlog/sinks/null_sink.h"
-#include "spdlog/sinks/rotating_file_sink.h"
+#include "spudlog/spdlog.h"
+#include "spudlog/sinks/basic_file_sink.h"
+#include "spudlog/sinks/daily_file_sink.h"
+#include "spudlog/sinks/null_sink.h"
+#include "spudlog/sinks/rotating_file_sink.h"
 
 #if defined(SPDLOG_USE_STD_FORMAT)
 #include <format>
 #elif defined(SPDLOG_FMT_EXTERNAL)
 #include <fmt/format.h>
 #else
-#include "spdlog/fmt/bundled/format.h"
+#include "spudlog/fmt/bundled/format.h"
 #endif
 
 #include "utils.h"

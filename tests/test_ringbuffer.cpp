@@ -1,5 +1,5 @@
 #include "includes.h"
-#include "spdlog/sinks/ringbuffer_sink.h"
+#include "spudlog/sinks/ringbuffer_sink.h"
 
 TEST_CASE("ringbuffer invalid size", "[ringbuffer]") {
     REQUIRE_THROWS_AS(spdlog::sinks::ringbuffer_sink_mt(0), spdlog::spdlog_ex);

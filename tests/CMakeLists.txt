@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.11)
-project(spdlog_utests CXX)
+project(spudlog_utests CXX)
 
-if(NOT TARGET spdlog)
+if(NOT TARGET spudlog)
     # Stand-alone build
-    find_package(spdlog REQUIRED)
+    find_package(spudlog REQUIRED)
 endif()
 
 include(../cmake/utils.cmake)
@@ -83,10 +83,10 @@ endfunction()
 
 # The compiled library tests
 if(SPDLOG_BUILD_TESTS OR SPDLOG_BUILD_ALL)
-    spdlog_prepare_test(spdlog-utests spdlog::spdlog)
+    spdlog_prepare_test(spudlog-utests spudlog::spudlog)
 endif()
 
 # The header-only library version tests
 if(SPDLOG_BUILD_TESTS_HO OR SPDLOG_BUILD_ALL)
-    spdlog_prepare_test(spdlog-utests-ho spdlog::spdlog_header_only)
+    spdlog_prepare_test(spudlog-utests-ho spudlog::spudlog_header_only)
 endif()

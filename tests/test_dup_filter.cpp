@@ -1,5 +1,5 @@
 #include "includes.h"
-#include "spdlog/sinks/dup_filter_sink.h"
+#include "spudlog/sinks/dup_filter_sink.h"
 #include "test_sink.h"
 
 TEST_CASE("dup_filter_test1", "[dup_filter_sink]") {

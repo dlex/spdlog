@@ -1,54 +1,35 @@
-# spdlog
+# spudlog
 
- 
-[![ci](https://github.com/gabime/spdlog/actions/workflows/linux.yml/badge.svg)](https://github.com/gabime/spdlog/actions/workflows/linux.yml)&nbsp;
-[![ci](https://github.com/gabime/spdlog/actions/workflows/windows.yml/badge.svg)](https://github.com/gabime/spdlog/actions/workflows/windows.yml)&nbsp;
-[![ci](https://github.com/gabime/spdlog/actions/workflows/macos.yml/badge.svg)](https://github.com/gabime/spdlog/actions/workflows/macos.yml)&nbsp;
-[![Build status](https://ci.appveyor.com/api/projects/status/d2jnxclg20vd0o50?svg=true&branch=v1.x)](https://ci.appveyor.com/project/gabime/spdlog) [![Release](https://img.shields.io/github/release/gabime/spdlog.svg)](https://github.com/gabime/spdlog/releases/latest)
+**Allocator-Aware {fmt}-based C++ Logging Library**
 
-Fast C++ logging library
+*spudlog* is a fork of [*spdlog*](https://github.com/gabime/spdlog) that builds upon its philosophy and carries most of its features. The primary motivation is allocator-aware logging, however that might not be the only distinctive feature. Future changes may include more compact logger objects, making the backtrace feature optional.
 
+*spudlog* aims to track upstream *spdlog* 1.x releases unless they significantly diverge from *spudlog*'s goals. To keep rebasing easy, changes from upstream are minimised — the `spdlog` name remains familiar to users of the library. Only the following are renamed:
+  * CMake project and targets
+  * Include directory (`spudlog/`)
+  * Version variables (`SPUDLOG_VERSION`)
+
+[![ci](https://github.com/tm1-oss/spudlog/actions/workflows/linux.yml/badge.svg)](https://github.com/tm1-oss/spudlog/actions/workflows/linux.yml)&nbsp;[![ci](https://github.com/tm1-oss/spudlog/actions/workflows/windows.yml/badge.svg)](https://github.com/tm1-oss/spudlog/actions/workflows/windows.yml)&nbsp;[![ci](https://github.com/tm1-oss/spudlog/actions/workflows/macos.yml/badge.svg)](https://github.com/tm1-oss/spudlog/actions/workflows/macos.yml)&nbsp; &nbsp;[![Coverity](https://img.shields.io/coverity/scan/33270.svg)](https://scan.coverity.com/projects/spudlog)&nbsp;&nbsp;&nbsp;[![Release](https://img.shields.io/github/release/tm1-oss/spudlog.svg)](https://github.com/tm1-oss/spudlog/releases/latest)
 
 ## Install
+
 #### Header-only version
-Copy the include [folder](include/spdlog) to your build tree and use a C++11 compiler.
+Copy the include [folder](include/spudlog) to your build tree and use a C++11 compiler.
 
 #### Compiled version (recommended - much faster compile times)
 ```console
-$ git clone https://github.com/gabime/spdlog.git
-$ cd spdlog && mkdir build && cd build
+$ git clone https://github.com/tm1-oss/spudlog.git
+$ cd spudlog && mkdir build && cd build
 $ cmake .. && cmake --build .
 ```
 see example [CMakeLists.txt](example/CMakeLists.txt) on how to use.
-
-## Platforms
-* Linux, FreeBSD, OpenBSD, Solaris, AIX
-* Windows (msvc 2013+, cygwin)
-* macOS (clang 3.5+)
-* Android
-
-## Package managers:
-* Debian: `sudo apt install libspdlog-dev`
-* Homebrew: `brew install spdlog`
-* MacPorts: `sudo port install spdlog`
-* FreeBSD:  `pkg install spdlog`
-* Fedora: `dnf install spdlog`
-* Gentoo: `emerge dev-libs/spdlog`
-* Arch Linux: `pacman -S spdlog`
-* openSUSE: `sudo zypper in spdlog-devel`
-* ALT Linux: `apt-get install libspdlog-devel`
-* vcpkg: `vcpkg install spdlog`
-* conan: `conan install --requires=spdlog/[*]`
-* conda: `conda install -c conda-forge spdlog`
-* build2: ```depends: spdlog ^1.8.2```
-
 
 ## Features
 * Very fast (see [benchmarks](#benchmarks) below).
 * Headers only or compiled
 * Feature-rich formatting, using the excellent [fmt](https://github.com/fmtlib/fmt) library.
 * Asynchronous mode (optional)
-* [Custom](https://github.com/gabime/spdlog/wiki/Custom-formatting) formatting.
+* [Custom](https://github.com/tm1-oss/spudlog/wiki/Custom-formatting) formatting.
 * Multi/Single threaded loggers.
 * Various log targets:
   * Rotating log files.
@@ -58,7 +39,7 @@ see example [CMakeLists.txt](example/CMakeLists.txt) on how to use.
   * Windows event log.
   * Windows debugger (```OutputDebugString(..)```).
   * Log to Qt widgets ([example](#log-to-qt-with-nice-colors)).
-  * Easily [extendable](https://github.com/gabime/spdlog/wiki/Sinks#implementing-your-own-sink) with custom log targets.
+  * Easily [extendable](https://github.com/tm1-oss/spudlog/wiki/Sinks#implementing-your-own-sink) with custom log targets.
 * Log filtering - log levels can be modified at runtime as well as compile time.
 * Support for loading log levels from argv or environment var.
 * [Backtrace](#backtrace-support) support - store debug messages in a ring buffer and display them later on demand.
@@ -67,7 +48,7 @@ see example [CMakeLists.txt](example/CMakeLists.txt) on how to use.
 
 #### Basic usage
 ```c++
-#include "spdlog/spdlog.h"
+#include "spudlog/spdlog.h"
 
 int main() 
 {
@@ -97,8 +78,8 @@ int main()
 ---
 #### Create stdout/stderr logger object
 ```c++
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spudlog/spdlog.h"
+#include "spudlog/sinks/stdout_color_sinks.h"
 void stdout_example()
 {
     // create a color multi-threaded logger
@@ -111,7 +92,7 @@ void stdout_example()
 ---
 #### Basic file logger
 ```c++
-#include "spdlog/sinks/basic_file_sink.h"
+#include "spudlog/sinks/basic_file_sink.h"
 void basic_logfile_example()
 {
     try 
@@ -127,7 +108,7 @@ void basic_logfile_example()
 ---
 #### Rotating files
 ```c++
-#include "spdlog/sinks/rotating_file_sink.h"
+#include "spudlog/sinks/rotating_file_sink.h"
 void rotating_example()
 {
     // Create a file rotating logger with 5 MB size max and 3 rotated files
@@ -141,7 +122,7 @@ void rotating_example()
 #### Daily files
 ```c++
 
-#include "spdlog/sinks/daily_file_sink.h"
+#include "spudlog/sinks/daily_file_sink.h"
 void daily_example()
 {
     // Create a daily logger - a new file is created every day at 2:30 am
@@ -181,7 +162,7 @@ spdlog::flush_every(std::chrono::seconds(3));
 #### Stopwatch
 ```c++
 // Stopwatch support for spdlog
-#include "spdlog/stopwatch.h"
+#include "spudlog/stopwatch.h"
 void stopwatch_example()
 {
     spdlog::stopwatch sw;    
@@ -203,7 +184,7 @@ void stopwatch_example()
 // {:n} - don't split the output into lines.
 // {:a} - show ASCII if :n is not set.
 
-#include "spdlog/fmt/bin_to_hex.h"
+#include "spudlog/fmt/bin_to_hex.h"
 
 void binary_example()
 {
@@ -288,8 +269,8 @@ void callback_example()
 ---
 #### Asynchronous logging
 ```c++
-#include "spdlog/async.h"
-#include "spdlog/sinks/basic_file_sink.h"
+#include "spudlog/async.h"
+#include "spudlog/sinks/basic_file_sink.h"
 void async_example()
 {
     // default thread pool settings can be modified *before* creating the async logger:
@@ -304,9 +285,9 @@ void async_example()
 ---
 #### Asynchronous logger with multi sinks
 ```c++
-#include "spdlog/async.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/sinks/rotating_file_sink.h"
+#include "spudlog/async.h"
+#include "spudlog/sinks/stdout_color_sinks.h"
+#include "spudlog/sinks/rotating_file_sink.h"
 
 void multi_sink_example2()
 {
@@ -343,7 +324,7 @@ void user_defined_example()
 ```c++ 
 // Log patterns can contain custom flags.
 // the following example will add new flag '%*' - which will be bound to a <my_formatter_flag> instance.
-#include "spdlog/pattern_formatter.h"
+#include "spudlog/pattern_formatter.h"
 class my_formatter_flag : public spdlog::custom_flag_formatter
 {
 public:
@@ -383,7 +364,7 @@ void err_handler_example()
 ---
 #### syslog
 ```c++
-#include "spdlog/sinks/syslog_sink.h"
+#include "spudlog/sinks/syslog_sink.h"
 void syslog_example()
 {
     std::string ident = "spdlog-example";
@@ -394,7 +375,7 @@ void syslog_example()
 ---
 #### Android example
 ```c++
-#include "spdlog/sinks/android_sink.h"
+#include "spudlog/sinks/android_sink.h"
 void android_example()
 {
     std::string tag = "spdlog-android";
@@ -407,7 +388,7 @@ void android_example()
 #### Load log levels from the env variable or argv
 
 ```c++
-#include "spdlog/cfg/env.h"
+#include "spudlog/cfg/env.h"
 int main (int argc, char *argv[])
 {
     spdlog::cfg::load_env_levels();
@@ -416,7 +397,7 @@ int main (int argc, char *argv[])
     // spdlog::cfg::load_env_levels("MYAPP_LEVEL");
     // or from the command line:
     // ./example SPDLOG_LEVEL=info,mylogger=trace
-    // #include "spdlog/cfg/argv.h" // for loading levels from argv
+    // #include "spudlog/cfg/argv.h" // for loading levels from argv
     // spdlog::cfg::load_argv_levels(argc, argv);
 }
 ```
@@ -459,8 +440,8 @@ void replace_default_logger_example()
 ---
 #### Log to Qt with nice colors
 ```c++
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/qt_sinks.h"
+#include "spudlog/spdlog.h"
+#include "spudlog/sinks/qt_sinks.h"
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     setMinimumSize(640, 480);
@@ -478,7 +459,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 // Mapped Diagnostic Context (MDC) is a map that stores key-value pairs (string values) in thread local storage.
 // Each thread maintains its own MDC, which loggers use to append diagnostic information to log outputs.
 // Note: it is not supported in asynchronous mode due to its reliance on thread-local storage.
-#include "spdlog/mdc.h"
+#include "spudlog/mdc.h"
 void mdc_example()
 {
     spdlog::mdc::put("key1", "value1");
@@ -543,11 +524,4 @@ Below are some [benchmarks](bench/bench.cpp) done in Ubuntu 64 bit, Intel i7-477
 
 ## Documentation
 
-Documentation can be found in the [wiki](https://github.com/gabime/spdlog/wiki) pages.
-
----
-
-### Powered by
-<a href="https://jb.gg/OpenSource">
-  <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg" alt="JetBrains logo" width="200">
-</a>
+Original *spdlog* documentation can be found in the [wiki](https://github.com/tm1-oss/spudlog/wiki) pages. *spudlog* does not provide its own documentation yet.
