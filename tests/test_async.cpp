@@ -1,6 +1,6 @@
 #include "includes.h"
-#include "spdlog/async.h"
-#include "spdlog/sinks/basic_file_sink.h"
+#include "spudlog/async.h"
+#include "spudlog/sinks/basic_file_sink.h"
 #include "test_sink.h"
 
 #define TEST_FILENAME "test_logs/async_test.log"

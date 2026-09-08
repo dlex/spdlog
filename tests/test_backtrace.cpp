@@ -1,6 +1,6 @@
 #include "includes.h"
 #include "test_sink.h"
-#include "spdlog/async.h"
+#include "spudlog/async.h"
 
 TEST_CASE("bactrace1", "[bactrace]") {
     using spdlog::sinks::test_sink_st;

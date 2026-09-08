@@ -1,18 +1,18 @@
 Header Only Version
 ==================================================================
-Just copy the files to your build tree and use a C++11 compiler.  
+Just copy the files to your build tree and use a C++11 compiler.
 Or use CMake:
-``` 
+```
   add_executable(example_header_only example.cpp)
-  target_link_libraries(example_header_only spdlog::spdlog_header_only)
+  target_link_libraries(example_header_only spudlog::spudlog_header_only)
 ```
 
 Compiled Library Version
 ==================================================================
 CMake:
-```  
+```
   add_executable(example example.cpp)
-  target_link_libraries(example spdlog::spdlog)
+  target_link_libraries(example spudlog::spudlog)
 ```
 
 Or copy files src/*.cpp to your build tree and pass the -DSPDLOG_COMPILED_LIB to the compiler.

@@ -1,5 +1,5 @@
 #include "includes.h"
-#include "spdlog/details/circular_q.h"
+#include "spudlog/details/circular_q.h"
 
 using q_type = spdlog::details::circular_q<size_t>;
 TEST_CASE("test_size", "[circular_q]") {

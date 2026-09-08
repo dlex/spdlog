@@ -26,20 +26,20 @@
 #undef SPDLOG_LEVEL_NAMES
 #undef SPDLOG_SHORT_LEVEL_NAMES
 
-#include "spdlog/spdlog.h"
-#include "spdlog/async.h"
-#include "spdlog/details/fmt_helper.h"
-#include "spdlog/details/os.h"
+#include "spudlog/spdlog.h"
+#include "spudlog/async.h"
+#include "spudlog/details/fmt_helper.h"
+#include "spudlog/details/os.h"
 
 #ifndef SPDLOG_NO_TLS
-#include "spdlog/mdc.h"
+#include "spudlog/mdc.h"
 #endif
 
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/daily_file_sink.h"
-#include "spdlog/sinks/null_sink.h"
-#include "spdlog/sinks/ostream_sink.h"
-#include "spdlog/sinks/rotating_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/sinks/msvc_sink.h"
-#include "spdlog/pattern_formatter.h"
+#include "spudlog/sinks/basic_file_sink.h"
+#include "spudlog/sinks/daily_file_sink.h"
+#include "spudlog/sinks/null_sink.h"
+#include "spudlog/sinks/ostream_sink.h"
+#include "spudlog/sinks/rotating_file_sink.h"
+#include "spudlog/sinks/stdout_color_sinks.h"
+#include "spudlog/sinks/msvc_sink.h"
+#include "spudlog/pattern_formatter.h"
