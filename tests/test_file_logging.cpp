@@ -111,6 +111,7 @@ TEST_CASE("rotating_file_logger2", "[rotating_logger]") {
 }
 
 // test that passing max_size=0 throws
+#ifndef SPDLOG_NO_EXCEPTIONS
 TEST_CASE("rotating_file_logger3", "[rotating_logger]") {
     prepare_logdir();
     size_t max_size = 0;
@@ -118,6 +119,7 @@ TEST_CASE("rotating_file_logger3", "[rotating_logger]") {
     REQUIRE_THROWS_AS(spdlog::rotating_logger_mt("logger", basename, max_size, 0),
                       spdlog::spdlog_ex);
 }
+#endif  // SPDLOG_NO_EXCEPTIONS
 
 // test on-demand rotation of logs
 TEST_CASE("rotating_file_logger4", "[rotating_logger]") {
