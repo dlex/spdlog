@@ -6,7 +6,26 @@ permissions:
   contents: read
 
 jobs:
+  check_token:
+    runs-on: ubuntu-latest
+    name: Check Coverity Secret
+    outputs:
+      has_token: ${{ steps.check.outputs.has_token }}
+    steps:
+      - id: check
+        env:
+          COVERITY_TOKEN: ${{ secrets.COVERITY_TOKEN }}
+        run: |
+          if [ -z "$COVERITY_TOKEN" ]; then
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+            echo "COVERITY_TOKEN secret is not set. You can set it up in Repository Settings -> Secrets and variables -> Actions."
+          else
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          fi
+
   coverity_scan:
+    needs: check_token
+    if: needs.check_token.outputs.has_token == 'true'
     runs-on: ubuntu-latest
     name: Coverity Scan
     steps:
