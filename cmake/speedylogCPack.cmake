@@ -3,9 +3,9 @@ set(CPACK_GENERATOR "TGZ;ZIP" CACHE STRING "Semicolon separated list of generato
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
 set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_BINARY_DIR}" "${PROJECT_NAME}" ALL .)
 
-set(CPACK_PROJECT_URL "https://github.com/gabime/spdlog")
-set(CPACK_PACKAGE_VENDOR "Gabi Melman")
-set(CPACK_PACKAGE_CONTACT "Gabi Melman <gmelman1@gmail.com>")
+set(CPACK_PROJECT_URL "https://github.com/tm1-oss/speedylog")
+set(CPACK_PACKAGE_VENDOR "IBM")
+set(CPACK_PACKAGE_CONTACT "tm1-oss")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Fast C++ logging library")
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})

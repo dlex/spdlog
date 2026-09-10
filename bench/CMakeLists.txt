@@ -1,11 +1,11 @@
 # Copyright(c) 2019 spdlog authors Distributed under the MIT License (http://opensource.org/licenses/MIT)
 
 cmake_minimum_required(VERSION 3.11)
-project(spdlog_bench CXX)
+project(speedylog_bench CXX)
 
-if(NOT TARGET spdlog)
+if(NOT TARGET speedylog)
     # Stand-alone build
-    find_package(spdlog CONFIG REQUIRED)
+    find_package(speedylog CONFIG REQUIRED)
 endif()
 
 find_package(Threads REQUIRED)
@@ -25,13 +25,13 @@ endif()
 
 add_executable(bench bench.cpp)
 spdlog_enable_warnings(bench)
-target_link_libraries(bench PRIVATE spdlog::spdlog)
+target_link_libraries(bench PRIVATE speedylog::speedylog)
 
 add_executable(async_bench async_bench.cpp)
-target_link_libraries(async_bench PRIVATE spdlog::spdlog)
+target_link_libraries(async_bench PRIVATE speedylog::speedylog)
 
 add_executable(latency latency.cpp)
-target_link_libraries(latency PRIVATE benchmark::benchmark spdlog::spdlog)
+target_link_libraries(latency PRIVATE benchmark::benchmark speedylog::speedylog)
 
 add_executable(formatter-bench formatter-bench.cpp)
-target_link_libraries(formatter-bench PRIVATE benchmark::benchmark spdlog::spdlog)
+target_link_libraries(formatter-bench PRIVATE benchmark::benchmark speedylog::speedylog)

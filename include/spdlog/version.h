@@ -9,3 +9,11 @@
 
 #define SPDLOG_TO_VERSION(major, minor, patch) (major * 10000 + minor * 100 + patch)
 #define SPDLOG_VERSION SPDLOG_TO_VERSION(SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH)
+
+// Above is the version of the upstream spdlog release this version is based on (latest fully integrated).
+// Below is speedylog's own version.
+
+#define SPEEDYLOG_VER_MAJOR 1
+#define SPEEDYLOG_VER_MINOR 0
+#define SPEEDYLOG_VER_PATCH 0
+#define SPEEDYLOG_VERSION SPDLOG_TO_VERSION(SPEEDYLOG_VER_MAJOR, SPEEDYLOG_VER_MINOR, SPEEDYLOG_VER_PATCH)

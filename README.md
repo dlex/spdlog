@@ -1,13 +1,16 @@
-# spdlog
+# speedylog
 
- 
-[![ci](https://github.com/gabime/spdlog/actions/workflows/linux.yml/badge.svg)](https://github.com/gabime/spdlog/actions/workflows/linux.yml)&nbsp;
-[![ci](https://github.com/gabime/spdlog/actions/workflows/windows.yml/badge.svg)](https://github.com/gabime/spdlog/actions/workflows/windows.yml)&nbsp;
-[![ci](https://github.com/gabime/spdlog/actions/workflows/macos.yml/badge.svg)](https://github.com/gabime/spdlog/actions/workflows/macos.yml)&nbsp;
-[![Build status](https://ci.appveyor.com/api/projects/status/d2jnxclg20vd0o50?svg=true&branch=v1.x)](https://ci.appveyor.com/project/gabime/spdlog) [![Release](https://img.shields.io/github/release/gabime/spdlog.svg)](https://github.com/gabime/spdlog/releases/latest)
+**Allocator-Aware {fmt}-based C++ Logging Library**
 
-Fast C++ logging library
+*speedylog* is a fork of [*spdlog*](https://github.com/gabime/spdlog) that builds upon its philosophy and carries most of its features. The primary motivation is allocator-aware logging, however that might not be the only distinctive feature. Future changes may include more compact logger objects, making the backtrace feature optional.
 
+*speedylog* aims to track upstream *spdlog* 1.x releases unless they significantly diverge from *speedylog*'s goals. To keep rebasing easy, differences from the upstream are minimised, and the `spdlog` name remains familiar to users of the library. Only the following are renamed:
+  * CMake project and targets
+  * Binaries
+  * Packaging labels
+  * Version macros (`SPEEDYLOG_VERSION`, original `SPDLOG_VERSION` now refers to the latest upstream fully integrated)
+
+[![ci](https://github.com/tm1-oss/speedylog/actions/workflows/linux.yml/badge.svg)](https://github.com/tm1-oss/speedylog/actions/workflows/linux.yml)&nbsp;[![ci](https://github.com/tm1-oss/speedylog/actions/workflows/windows.yml/badge.svg)](https://github.com/tm1-oss/speedylog/actions/workflows/windows.yml)&nbsp;[![ci](https://github.com/tm1-oss/speedylog/actions/workflows/macos.yml/badge.svg)](https://github.com/tm1-oss/speedylog/actions/workflows/macos.yml)&nbsp; &nbsp;[![Coverity](https://img.shields.io/coverity/scan/33274.svg)](https://scan.coverity.com/projects/tm1-oss-speedylog)&nbsp;&nbsp;&nbsp;[![Release](https://img.shields.io/github/release/tm1-oss/speedylog.svg)](https://github.com/tm1-oss/speedylog/releases/latest)
 
 ## Install
 #### Header-only version
@@ -15,33 +18,11 @@ Copy the include [folder](include/spdlog) to your build tree and use a C++11 com
 
 #### Compiled version (recommended - much faster compile times)
 ```console
-$ git clone https://github.com/gabime/spdlog.git
-$ cd spdlog && mkdir build && cd build
+$ git clone https://github.com/tm1-oss/speedylog.git
+$ cd speedylog && mkdir build && cd build
 $ cmake .. && cmake --build .
 ```
 see example [CMakeLists.txt](example/CMakeLists.txt) on how to use.
-
-## Platforms
-* Linux, FreeBSD, OpenBSD, Solaris, AIX
-* Windows (msvc 2013+, cygwin)
-* macOS (clang 3.5+)
-* Android
-
-## Package managers:
-* Debian: `sudo apt install libspdlog-dev`
-* Homebrew: `brew install spdlog`
-* MacPorts: `sudo port install spdlog`
-* FreeBSD:  `pkg install spdlog`
-* Fedora: `dnf install spdlog`
-* Gentoo: `emerge dev-libs/spdlog`
-* Arch Linux: `pacman -S spdlog`
-* openSUSE: `sudo zypper in spdlog-devel`
-* ALT Linux: `apt-get install libspdlog-devel`
-* vcpkg: `vcpkg install spdlog`
-* conan: `conan install --requires=spdlog/[*]`
-* conda: `conda install -c conda-forge spdlog`
-* build2: ```depends: spdlog ^1.8.2```
-
 
 ## Features
 * Very fast (see [benchmarks](#benchmarks) below).
@@ -543,11 +524,4 @@ Below are some [benchmarks](bench/bench.cpp) done in Ubuntu 64 bit, Intel i7-477
 
 ## Documentation
 
-Documentation can be found in the [wiki](https://github.com/gabime/spdlog/wiki) pages.
-
----
-
-### Powered by
-<a href="https://jb.gg/OpenSource">
-  <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg" alt="JetBrains logo" width="200">
-</a>
+Original *spdlog* documentation can be found in the [wiki](https://github.com/gabime/spdlog/wiki) pages. *speedylog* does not provide its own documentation yet.
