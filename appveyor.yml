@@ -83,7 +83,7 @@ build_script:
       cmake --build . --config %BUILD_TYPE%
 
 before_test:
-  - set PATH=%PATH%;C:\projects\spdlog\build\_deps\catch2-build\src\%BUILD_TYPE%;C:\projects\spdlog\build\%BUILD_TYPE%
+  - set PATH=%PATH%;%APPVEYOR_BUILD_FOLDER%\build\_deps\catch2-build\src\%BUILD_TYPE%;%APPVEYOR_BUILD_FOLDER%\build\%BUILD_TYPE%
   
 test_script:
-  - C:\projects\spdlog\build\tests\%BUILD_TYPE%\spdlog-utests.exe
+  - '"%APPVEYOR_BUILD_FOLDER%\build\tests\%BUILD_TYPE%\speedylog-utests.exe"'
