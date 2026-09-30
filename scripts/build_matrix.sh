@@ -31,15 +31,19 @@
 #                    fetched dependencies to be re-downloaded.
 #   --keep-going     Continue to the next combination on failure instead of
 #                    stopping.
+#   --no-build       Discover compilers and stop.
 #
 # Other options:
 #   --reuse-dir      Reuse a single build directory (build/cmaketools/) for
 #                    every combination, wiping it between runs.  Without this
 #                    flag each combination gets its own directory under
 #                    build/<compiler>-<ver>/<cppstd>/<cmake-tuple>/
+#   --gen-presets    Generate CMake presets file for every iterated combination.
+#                    Written to CMakeUserPresets.json at the project root, or to the
+#                    log directory if that file already exists. Combine with
+#                    --no-build to only generate the presets file without building.
 #   --wait-for-dedup Wait for deduplication to complete before exiting.
 #                    If not specified, script exits immediately after builds finish.
-#   --no-build       Discover compilers and stop.
 #   --dry-run        Print commands that would be run without executing.
 #   -h, --help       Show this help and exit.
 
@@ -85,6 +89,7 @@ sanitizer=""  # "asan" | "tsan" | ""
 keep_going=0
 dry_run=0
 no_build=0
+gen_presets=0
 wait_for_dedup=0
 
 # Argument parsing
@@ -102,6 +107,7 @@ while [[ $# -gt 0 ]]; do
         --asan)         sanitizer+="asan" ;;
         --tsan)         sanitizer+="tsan" ;;
         --keep-going)   keep_going=1 ;;
+        --gen-presets)  gen_presets=1 ;;
         --dry-run)      dry_run=1 ;;
         --no-build)     no_build=1 ;;
         --wait-for-dedup) wait_for_dedup=1 ;;
@@ -209,6 +215,7 @@ filter_latest_compilers() {
 }
 
 discover_compilers() {
+    # shellcheck disable=SC2178
     local -n _out=$1
     local -a seen=()
 
@@ -227,6 +234,121 @@ discover_compilers() {
     done
 }
 
+# Resolves all CMake definitions, flags, and relative build path for a combination.
+# Args: out_defs_var out_relpath_var out_cxxflags_var cxx_bin cxx_ver cxx_std bld_type cmake_label [combo_flags…]
+resolve_combo_config() {
+    local -n _out_defs=$1
+    local -n _out_relpath=$2
+    local -n _out_cxxflags=$3
+    local cxx_bin="$4"
+    local cxx_ver="$5"
+    local cxx_std="$6"
+    local bld_type="$7"
+    local cmake_label="$8"
+    shift 8
+
+    if [[ $reuse_dir -eq 1 ]]; then
+        _out_relpath="build/cmaketools"
+    else
+        local safe_label="${cmake_label//[^a-zA-Z0-9._-]/_}"
+        _out_relpath="build/${cxx_ver}/cxx${cxx_std}/${bld_type}/${safe_label}"
+    fi
+
+    local CC="${cxx_bin//\+\+/}"
+    if ! command -v "${CC}" &>/dev/null; then CC="cc"; fi
+
+    _out_cxxflags=""
+    if $cxx_bin --version 2>/dev/null | grep -qi clang; then
+        local clang_ver
+        clang_ver=$(echo "$cxx_ver" | grep -oE '[0-9]+$')
+        if [[ -d "/usr/lib/llvm-${clang_ver}/include/c++" ]] || \
+           [[ -d "/usr/include/c++/v1" ]]; then
+            _out_cxxflags="-stdlib=libc++"
+        fi
+    fi
+
+    _out_defs=(
+        "-DCMAKE_BUILD_TYPE=${bld_type}"
+        "-DCMAKE_CXX_STANDARD=${cxx_std}"
+        "-DCMAKE_CXX_COMPILER=${cxx_bin}"
+        "-DCMAKE_C_COMPILER=${CC}"
+        "-DSPDLOG_BUILD_EXAMPLE=ON"
+        "-DSPDLOG_BUILD_EXAMPLE_HO=ON"
+        "-DSPDLOG_BUILD_WARNINGS=ON"
+        "-DSPDLOG_BUILD_BENCH=ON"
+        "-DSPDLOG_BUILD_TESTS=ON"
+        "-DSPDLOG_BUILD_TESTS_HO=ON"
+    )
+
+    if command -v ccache &>/dev/null; then
+        _out_defs+=(
+            "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
+            "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
+        )
+    fi
+
+    if [[ "$bld_type" == "Debug" ]]; then
+        if [[ "$sanitizer" == "asan" ]]; then
+            _out_defs+=("-DSPDLOG_SANITIZE_ADDRESS=ON")
+        elif [[ "$sanitizer" == "tsan" ]]; then
+            _out_defs+=("-DSPDLOG_SANITIZE_THREAD=ON")
+        fi
+    fi
+
+    _out_defs+=("$@")
+}
+
+# Appends configure, build, and test preset entries for one combination to the presets JSON file.
+# Args: presets_file cxx_bin cxx_ver cxx_std bld_type cmake_label [cmake_flags…]
+append_preset_one() {
+    local target_file="$1"; shift
+    local cxx_bin="$1"; shift
+    local cxx_ver="$1"; shift
+    local cxx_std="$1"; shift
+    local bld_type="$1"; shift
+    local cmake_label="$1"; shift
+
+    local preset_name="${cxx_ver}-cxx${cxx_std}-${bld_type}-${cmake_label}"
+    local defs=() relpath="" extra_cxxflags=""
+    resolve_combo_config defs relpath extra_cxxflags "$cxx_bin" "$cxx_ver" "$cxx_std" "$bld_type" "$cmake_label" "$@"
+
+    local preset_bin_dir="\${sourceDir}/${relpath}"
+
+    jq \
+        --arg name "$preset_name" \
+        --arg displayName "${cxx_ver} C++${cxx_std} ${bld_type} ${cmake_label}" \
+        --arg binaryDir "$preset_bin_dir" \
+        --arg extraFlags "$extra_cxxflags" \
+        --arg comboFlags "${defs[*]}" \
+        '
+        ($comboFlags | split(" ") | map(select(startswith("-D") and length > 2) | ltrimstr("-D")) | map(
+            if contains("=") then
+                split("=") | { key: .[0], value: .[1] }
+            else
+                { key: ., value: "ON" }
+            end
+        ) | from_entries) as $defsVars |
+        ($defsVars + (if $extraFlags != "" then { CMAKE_CXX_FLAGS: $extraFlags } else {} end)) as $cacheVars |
+        .configurePresets += [{
+            name: $name,
+            displayName: $displayName,
+            binaryDir: $binaryDir,
+            cacheVariables: $cacheVars
+        }] |
+        .buildPresets += [{
+            name: $name,
+            configurePreset: $name,
+            nativeToolOptions: ["-j"]
+        }] |
+        .testPresets += [{
+            name: $name,
+            configurePreset: $name,
+            output: { outputOnFailure: true },
+            execution: { jobs: 0 }
+        }]
+        ' "${target_file}" > "${target_file}.new" && mv "${target_file}.new" "${target_file}"
+}
+
 # Build one combination  (runs inside a worker subshell)
 #
 # Args: job_status_file  cxx_bin  cxx_ver  cxx_std  bld_type  cmake_label  [cmake_flags…]
@@ -243,14 +365,10 @@ build_one() {
 
     local label="${cxx_ver}/cxx${cxx_std}/${bld_type}/${cmake_label}"
 
-    # Choose build directory.
-    local build_dir
-    if [[ $reuse_dir -eq 1 ]]; then
-        build_dir="${repo_root}/build/cmaketools"
-    else
-        local safe_label="${cmake_label//[^a-zA-Z0-9._-]/_}"
-        build_dir="${repo_root}/build/${cxx_ver}/cxx${cxx_std}/${bld_type}/${safe_label}"
-    fi
+    local defs=() relpath="" extra_cxxflags=""
+    resolve_combo_config defs relpath extra_cxxflags "$cxx_bin" "$cxx_ver" "$cxx_std" "$bld_type" "$cmake_label" "$@"
+
+    local build_dir="${repo_root}/${relpath}"
 
     # Wipe / create build dir.
     if [[ $rebuild -eq 1 ]] && [[ -d "${build_dir}" ]]; then
@@ -262,57 +380,11 @@ build_one() {
     fi
     run mkdir -p "${build_dir}"
 
-    # Derive CC from CXX (g++ → g, clang++ → clang).
-    local CC="${cxx_bin//\+\+/}"
-    if ! command -v "${CC}" &>/dev/null; then CC="cc"; fi
-    local CXX="${cxx_bin}"
-
-    # Use libc++ for clang when available.
-    local extra_cxxflags=""
-    if $cxx_bin --version 2>/dev/null | grep -qi clang; then
-        local clang_ver
-        clang_ver=$(echo "$cxx_ver" | grep -oE '[0-9]+$')
-        if [[ -d "/usr/lib/llvm-${clang_ver}/include/c++" ]] || \
-           [[ -d "/usr/include/c++/v1" ]]; then
-            extra_cxxflags="-stdlib=libc++"
-        fi
-    fi
-
-    local ccache_flags=()
-    if command -v ccache &>/dev/null; then
-        ccache_flags+=(
-            "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
-            "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
-        )
-    fi
-
-    # Apply sanitizer only for Debug builds.
-    local san_flags=()
-    if [[ "$bld_type" == "Debug" ]]; then
-        if [[ "$sanitizer" == "asan" ]]; then
-            san_flags+=("-DSPDLOG_SANITIZE_ADDRESS=ON")
-        elif [[ "$sanitizer" == "tsan" ]]; then
-            san_flags+=("-DSPDLOG_SANITIZE_THREAD=ON")
-        fi
-    fi
-
     local cmake_cmd=(
         cmake
         -S "${repo_root}"
         -B "${build_dir}"
-        "-DCMAKE_BUILD_TYPE=${bld_type}"
-        "-DCMAKE_CXX_STANDARD=${cxx_std}"
-        "-DCMAKE_CXX_COMPILER=${CXX}"
-        "-DCMAKE_C_COMPILER=${CC}"
-        -DSPDLOG_BUILD_EXAMPLE=ON
-        -DSPDLOG_BUILD_EXAMPLE_HO=ON
-        -DSPDLOG_BUILD_WARNINGS=ON
-        -DSPDLOG_BUILD_BENCH=ON
-        -DSPDLOG_BUILD_TESTS=ON
-        -DSPDLOG_BUILD_TESTS_HO=ON
-        "${ccache_flags[@]+"${ccache_flags[@]}"}"
-        "${san_flags[@]+"${san_flags[@]}"}"
-        "$@"
+        "${defs[@]}"
     )
     if [[ -n "$extra_cxxflags" ]]; then
         cmake_cmd+=("-DCMAKE_CXX_FLAGS=${extra_cxxflags}")
@@ -393,12 +465,19 @@ readonly abort_flag="${logdir}/abort"
 # already-running jobs are left to finish.
 trap '
     echo ""
-    log "Interrupted - waiting for in-flight jobs to finish..."
-    touch "${abort_flag}"
-    for (( _s=0; _s<=jobs; _s++ )); do printf "\n" >&3; done
-    wait_with_progress
-    log "Done."
-    exit 130
+    if [ -e "${abort_flag}" ]; then
+        log "Interrupted again - terminating in-flight jobs..."
+        kill -- -$$ 2>/dev/null || true
+        wait
+        exit 130
+    else
+        log "Interrupted - waiting for in-flight jobs to finish. Interrupt again to terminate them..."
+        touch "${abort_flag}"
+        for (( _s=0; _s<=jobs; _s++ )); do printf "\n" >&3; done
+        wait_with_progress
+        log "Done."
+        exit 130
+    fi
 ' INT
 
 # Enqueue one combination as a background worker.
@@ -510,6 +589,26 @@ log "Parallel iterations: ${jobs} (each iteration uses -j1 for cmake/ctest)"
 log "Logs: ${logdir}/"
 echo ""
 
+presets_root="${repo_root}/CMakeUserPresets.json"
+presets_file=""
+presets_tmp=""
+if [[ $gen_presets -eq 1 ]]; then
+    if [[ -e "$presets_root" ]]; then
+        presets_file="${logdir}/CMakeUserPresets.json"
+        log "CMake presets file already exists at project root; generated presets will be written to ${presets_file}"
+    else
+        presets_file="$presets_root"
+    fi
+    presets_tmp="$(mktemp "${logdir}/presets.XXXXXX.json")"
+    jq -n '{
+        version: 3,
+        cmakeMinimumRequired: { major: 3, minor: 21, patch: 0 },
+        configurePresets: [],
+        buildPresets: [],
+        testPresets: []
+    }' > "${presets_tmp}"
+fi
+
 skip=0
 for cxx in "${compilers[@]}"; do
     # Identify compiler type and major version
@@ -525,8 +624,6 @@ for cxx in "${compilers[@]}"; do
     fi
     read -ra standards <<< "$standards_str"
     log "${cxx_ver_tag} ($(compiler_full_ver "$cxx")): C++ standards supported: ${standards[*]}"
-
-    [[ $no_build -eq 1 ]] && continue
 
     if [[ -n "$std_only" ]]; then
         # Skip the compiler entirely if it doesn't support that standard
@@ -574,6 +671,21 @@ for cxx in "${compilers[@]}"; do
                     continue
                 fi
 
+                if [[ $gen_presets -eq 1 ]]; then
+                    append_preset_one \
+                        "${presets_tmp}" \
+                        "$cxx" \
+                        "$cxx_ver_tag" \
+                        "$cxx_std" \
+                        "$bld_type" \
+                        "$combo_label" \
+                        "${combo_flags[@]+"${combo_flags[@]}"}"
+                fi
+
+                if [[ $no_build -eq 1 ]]; then
+                    continue
+                fi
+
                 # Dispatch to the worker pool
                 if [[ $dry_run -eq 1 ]]; then
                     build_one \
@@ -597,6 +709,12 @@ for cxx in "${compilers[@]}"; do
         done
     done
 done
+
+# Finalize CMakeUserPresets.json if requested
+if [[ -n "$presets_tmp" ]] && [[ -e "$presets_tmp" ]]; then
+    log "Generated CMake presets file: ${presets_file}"
+    mv "$presets_tmp" "$presets_file"
+fi
 
 # Drain the pool: wait for all background jobs, redrawing a status line once
 # per second based on the counts of per-job .status files.
