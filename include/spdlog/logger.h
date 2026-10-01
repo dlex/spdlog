@@ -67,10 +67,7 @@ public:
     // Empty logger
     explicit basic_logger(string_type name,
                           Alloc alloc_fmt_buf = Alloc(),
-                          Alloc alloc_data = Alloc())
-        : Alloc(alloc_fmt_buf),
-          name_(std::move(name), alloc_data),
-          sinks_(alloc_data) {}
+                          Alloc alloc_data = Alloc());
 
     // Logger with range on sinks
     template <typename It>
@@ -87,26 +84,21 @@ public:
     basic_logger(string_type name,
                  vector_type<sink_ptr<Alloc>> sinks,
                  Alloc alloc_fmt_buf = Alloc(),
-                 Alloc alloc_data = Alloc())
-        : Alloc(alloc_fmt_buf),
-          name_(std::move(name), alloc_data),
-          sinks_(std::move(sinks), alloc_data) {}
+                 Alloc alloc_data = Alloc());
 
     // Logger with single sink
     basic_logger(string_type name,
                  sink_ptr<Alloc> single_sink,
                  Alloc alloc_fmt_buf = Alloc(),
-                 Alloc alloc_data = Alloc())
-        : basic_logger(std::move(name), {std::move(single_sink)}, alloc_fmt_buf, alloc_data) {}
+                 Alloc alloc_data = Alloc());
 
     // Logger with sinks init list
     basic_logger(string_type name,
                  sinks_init_list<Alloc> sinks,
                  Alloc alloc_fmt_buf = Alloc(),
-                 Alloc alloc_data = Alloc())
-        : basic_logger(std::move(name), sinks.begin(), sinks.end(), alloc_fmt_buf, alloc_data) {}
+                 Alloc alloc_data = Alloc());
 
-    virtual ~basic_logger() = default;
+    virtual ~basic_logger();
 
     basic_logger(const basic_logger &other);
     basic_logger(const basic_logger &other, Alloc alloc_fmt_buf, Alloc alloc_data);

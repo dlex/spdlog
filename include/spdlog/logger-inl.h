@@ -17,6 +17,40 @@ namespace spdlog {
 
 // public methods
 template <class Alloc>
+SPDLOG_INLINE basic_logger<Alloc>::basic_logger(string_type name,
+                                                Alloc alloc_fmt_buf,
+                                                Alloc alloc_data)
+    : Alloc(alloc_fmt_buf),
+      name_(std::move(name), alloc_data),
+      sinks_(alloc_data) {}
+
+template <class Alloc>
+SPDLOG_INLINE basic_logger<Alloc>::basic_logger(string_type name,
+                                                vector_type<sink_ptr<Alloc>> sinks,
+                                                Alloc alloc_fmt_buf,
+                                                Alloc alloc_data)
+    : Alloc(alloc_fmt_buf),
+      name_(std::move(name), alloc_data),
+      sinks_(std::move(sinks), alloc_data) {}
+
+template <class Alloc>
+SPDLOG_INLINE basic_logger<Alloc>::basic_logger(string_type name,
+                                                sink_ptr<Alloc> single_sink,
+                                                Alloc alloc_fmt_buf,
+                                                Alloc alloc_data)
+    : basic_logger(std::move(name), {std::move(single_sink)}, alloc_fmt_buf, alloc_data) {}
+
+template <class Alloc>
+SPDLOG_INLINE basic_logger<Alloc>::basic_logger(string_type name,
+                                                sinks_init_list<Alloc> sinks,
+                                                Alloc alloc_fmt_buf,
+                                                Alloc alloc_data)
+    : basic_logger(std::move(name), sinks.begin(), sinks.end(), alloc_fmt_buf, alloc_data) {}
+
+template <class Alloc>
+SPDLOG_INLINE basic_logger<Alloc>::~basic_logger() = default;
+
+template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc>::basic_logger(const basic_logger &other)
     : Alloc(std::allocator_traits<Alloc>::select_on_container_copy_construction(other)),
       name_(other.name_),
