@@ -33,13 +33,11 @@ public:
                        std::size_t max_size,
                        std::size_t max_files,
                        bool rotate_on_open,
-                       Alloc alloc = Alloc())
-        : rotating_file_sink(base_filename, max_size, max_files, rotate_on_open, {}, alloc) {}
+                       Alloc alloc = Alloc());
     rotating_file_sink(filename_t base_filename,
                        std::size_t max_size,
                        std::size_t max_files,
-                       Alloc alloc = Alloc())
-        : rotating_file_sink(base_filename, max_size, max_files, false, alloc) {}
+                       Alloc alloc = Alloc());
 
     static filename_t calc_filename(const filename_t &filename, std::size_t index);
     filename_t filename();

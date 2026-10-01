@@ -50,6 +50,21 @@ SPDLOG_INLINE rotating_file_sink<Mutex, Alloc>::rotating_file_sink(
     }
 }
 
+template <typename Mutex, class Alloc>
+SPDLOG_INLINE rotating_file_sink<Mutex, Alloc>::rotating_file_sink(filename_t base_filename,
+                                                                   std::size_t max_size,
+                                                                   std::size_t max_files,
+                                                                   bool rotate_on_open,
+                                                                   Alloc alloc)
+    : rotating_file_sink(base_filename, max_size, max_files, rotate_on_open, {}, alloc) {}
+
+template <typename Mutex, class Alloc>
+SPDLOG_INLINE rotating_file_sink<Mutex, Alloc>::rotating_file_sink(filename_t base_filename,
+                                                                   std::size_t max_size,
+                                                                   std::size_t max_files,
+                                                                   Alloc alloc)
+    : rotating_file_sink(base_filename, max_size, max_files, false, alloc) {}
+
 // calc filename according to index and file extension if exists.
 // e.g. calc_filename("logs/mylog.txt, 3) => "logs/mylog.3.txt".
 template <typename Mutex, class Alloc>
