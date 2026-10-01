@@ -25,10 +25,19 @@
 #endif
 #endif
 
+// Empty allocator optimization allows allocator aware classes to avoid having their size increased
+// when instantiated with stateless allocator like std::allocator
+#define SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_ENABLED(X) X
+#define SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_DISABLED(X)
+
 #ifdef SPDLOG_COMPILED_LIB
 #undef SPDLOG_HEADER_ONLY
 #if defined(SPDLOG_SHARED_LIB)
 #if defined(_WIN32)
+#undef SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_ENABLED
+#undef SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_DISABLED
+#define SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_ENABLED(X)
+#define SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_DISABLED(X) X
 #ifdef speedylog_EXPORTS
 #define SPDLOG_API __declspec(dllexport)
 #define SPDLOG_INSTANTIATED_TEMPLATE_API __declspec(dllexport)

@@ -13,6 +13,18 @@
 
 #include <cstdio>
 
+#define SPDLOG_LOGGER_INITIALIZE_ALLOCATOR(FUNC, ARG)            \
+    SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_ENABLED(Alloc(FUNC(ARG))) \
+    SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_DISABLED(alloc_(FUNC(ARG)))
+
+#define SPDLOG_LOGGER_GET_ALLOCATOR(OBJ)                                  \
+    SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_ENABLED(static_cast<Alloc &>(OBJ)) \
+    SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_DISABLED((OBJ).alloc_)
+
+#define SPDLOG_LOGGER_GET_ALLOCATOR_CONST(OBJ)                                  \
+    SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_ENABLED(static_cast<const Alloc &>(OBJ)) \
+    SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_DISABLED((OBJ).alloc_)
+
 namespace spdlog {
 
 // public methods
@@ -20,7 +32,7 @@ template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc>::basic_logger(string_type name,
                                                 Alloc alloc_fmt_buf,
                                                 Alloc alloc_data)
-    : Alloc(alloc_fmt_buf),
+    : SPDLOG_LOGGER_INITIALIZE_ALLOCATOR(, alloc_fmt_buf),
       name_(std::move(name), alloc_data),
       sinks_(alloc_data) {}
 
@@ -29,7 +41,7 @@ SPDLOG_INLINE basic_logger<Alloc>::basic_logger(string_type name,
                                                 vector_type<sink_ptr<Alloc>> sinks,
                                                 Alloc alloc_fmt_buf,
                                                 Alloc alloc_data)
-    : Alloc(alloc_fmt_buf),
+    : SPDLOG_LOGGER_INITIALIZE_ALLOCATOR(, alloc_fmt_buf),
       name_(std::move(name), alloc_data),
       sinks_(std::move(sinks), alloc_data) {}
 
@@ -52,7 +64,9 @@ SPDLOG_INLINE basic_logger<Alloc>::~basic_logger() = default;
 
 template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc>::basic_logger(const basic_logger &other)
-    : Alloc(std::allocator_traits<Alloc>::select_on_container_copy_construction(other)),
+    : SPDLOG_LOGGER_INITIALIZE_ALLOCATOR(
+          std::allocator_traits<Alloc>::select_on_container_copy_construction,
+          SPDLOG_LOGGER_GET_ALLOCATOR_CONST(other)),
       name_(other.name_),
       sinks_(other.sinks_),
       level_(other.level_.load(std::memory_order_relaxed)),
@@ -64,7 +78,7 @@ template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc>::basic_logger(const basic_logger &other,
                                                 Alloc alloc_fmt_buf,
                                                 Alloc alloc_data)
-    : Alloc(alloc_fmt_buf),
+    : SPDLOG_LOGGER_INITIALIZE_ALLOCATOR(, alloc_fmt_buf),
       name_(other.name_, alloc_data),
       sinks_(other.sinks_, alloc_data),
       level_(other.level_.load(std::memory_order_relaxed)),
@@ -74,7 +88,7 @@ SPDLOG_INLINE basic_logger<Alloc>::basic_logger(const basic_logger &other,
 
 template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc>::basic_logger(basic_logger &&other) SPDLOG_NOEXCEPT
-    : Alloc(std::move(other)),
+    : SPDLOG_LOGGER_INITIALIZE_ALLOCATOR(std::move, SPDLOG_LOGGER_GET_ALLOCATOR(other)),
       name_(std::move(other.name_)),
       sinks_(std::move(other.sinks_)),
       level_(other.level_.load(std::memory_order_relaxed)),
@@ -85,8 +99,9 @@ SPDLOG_INLINE basic_logger<Alloc>::basic_logger(basic_logger &&other) SPDLOG_NOE
 template <class Alloc>
 SPDLOG_INLINE basic_logger<Alloc>::basic_logger(basic_logger &&other,
                                                 Alloc alloc_fmt_buf,
-                                                Alloc alloc_data) SPDLOG_ALLOC_MOVE_EXT_NOEXCEPT(Alloc)
-    : Alloc(alloc_fmt_buf),
+                                                Alloc alloc_data)
+    SPDLOG_ALLOC_MOVE_EXT_NOEXCEPT(Alloc)
+    : SPDLOG_LOGGER_INITIALIZE_ALLOCATOR(, alloc_fmt_buf),
       name_(std::move(other.name_), alloc_data),
       sinks_(std::move(other.sinks_), alloc_data),
       level_(other.level_.load(std::memory_order_relaxed)),
@@ -100,7 +115,7 @@ SPDLOG_INLINE basic_logger<Alloc> &basic_logger<Alloc>::operator=(const basic_lo
     // Propagate the allocator when the trait demands it
     SPDLOG_IF_CONSTEXPR(
         std::allocator_traits<Alloc>::propagate_on_container_copy_assignment::value) {
-        static_cast<Alloc &>(*this) = static_cast<const Alloc &>(other);
+        SPDLOG_LOGGER_GET_ALLOCATOR(*this) = SPDLOG_LOGGER_GET_ALLOCATOR_CONST(other);
     }
     name_ = other.name_;
     sinks_ = other.sinks_;
@@ -119,7 +134,7 @@ SPDLOG_INLINE basic_logger<Alloc> &basic_logger<Alloc>::operator=(basic_logger &
     // propagate the allocator when the trait demands it
     SPDLOG_IF_CONSTEXPR(
         std::allocator_traits<Alloc>::propagate_on_container_move_assignment::value) {
-        static_cast<Alloc &>(*this) = std::move(static_cast<Alloc &>(other));
+        SPDLOG_LOGGER_GET_ALLOCATOR(*this) = std::move(SPDLOG_LOGGER_GET_ALLOCATOR(other));
     }
     name_ = std::move(other.name_);
     sinks_ = std::move(other.sinks_);
@@ -136,11 +151,11 @@ SPDLOG_INLINE void basic_logger<Alloc>::swap(basic_logger &other)
     SPDLOG_ALLOC_SWAP_NOEXCEPT(Alloc) {
     if (this == &other) return;
     SPDLOG_IF_CONSTEXPR(std::allocator_traits<Alloc>::propagate_on_container_swap::value) {
-        std::swap(static_cast<Alloc &>(*this), static_cast<Alloc &>(other));
+        std::swap(SPDLOG_LOGGER_GET_ALLOCATOR(*this), SPDLOG_LOGGER_GET_ALLOCATOR(other));
     }
     else {
         // swapping with nonequal allocator is UB per [container.reqmts-65]
-        assert(static_cast<Alloc &>(*this) == static_cast<Alloc &>(other));
+        assert(SPDLOG_LOGGER_GET_ALLOCATOR(*this) == SPDLOG_LOGGER_GET_ALLOCATOR(other));
     }
 
     name_.swap(other.name_);
@@ -247,6 +262,11 @@ template <class Alloc>
 SPDLOG_INLINE typename basic_logger<Alloc>::template vector_type<sink_ptr<Alloc>> &
 basic_logger<Alloc>::sinks() {
     return sinks_;
+}
+
+template <class Alloc>
+SPDLOG_INLINE Alloc basic_logger<Alloc>::get_fmt_buf_allocator() const {
+    return SPDLOG_LOGGER_GET_ALLOCATOR_CONST(*this);
 }
 
 // error handler

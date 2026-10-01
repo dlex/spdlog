@@ -53,7 +53,7 @@ namespace spdlog {
 // - alloc_fmt_buf - for the formatting buffer, which may be (re)allocated multiple times in logger lifetime
 // - alloc_data - for name, sinks, and other internal data allocated for logger lifetime
 template <class Alloc>
-class SPDLOG_API basic_logger : private Alloc {
+class SPDLOG_API basic_logger SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_ENABLED( : private Alloc) {
 public:
     static_assert(std::is_same<char, typename Alloc::value_type>::value,
                   "Allocator type of basic_logger must have char as the value_type");
@@ -76,7 +76,8 @@ public:
                  It end,
                  Alloc alloc_fmt_buf = Alloc(),
                  Alloc alloc_data = Alloc())
-        : Alloc(alloc_fmt_buf),
+        : SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_ENABLED(Alloc(alloc_fmt_buf))
+              SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_DISABLED(alloc_(alloc_fmt_buf)),
           name_(std::move(name), alloc_data),
           sinks_(begin, end, alloc_data) {}
 
@@ -333,7 +334,7 @@ public:
     vector_type<sink_ptr<Alloc>> &sinks();
 
     // Return the allocator used for the formatting buffer.
-    Alloc get_fmt_buf_allocator() const { return static_cast<const Alloc &>(*this); }
+    Alloc get_fmt_buf_allocator() const;
 
     // error handler
     void set_error_handler(err_handler);
@@ -342,6 +343,7 @@ public:
     virtual std::shared_ptr<basic_logger> clone(string_type logger_name);
 
 protected:
+    SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_DISABLED(Alloc alloc_;)
     string_type name_;
     vector_type<sink_ptr<Alloc>> sinks_;
     spdlog::level_t level_{level::info};
@@ -358,7 +360,7 @@ protected:
             return;
         }
         SPDLOG_TRY {
-            basic_memory_buf_t<Alloc> buf(*this);
+            basic_memory_buf_t<Alloc> buf(get_fmt_buf_allocator());
 #ifdef SPDLOG_USE_STD_FORMAT
             fmt_lib::vformat_to(std::back_inserter(buf), fmt, fmt_lib::make_format_args(args...));
 #else
