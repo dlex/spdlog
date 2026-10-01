@@ -62,13 +62,15 @@ protected:
 template <typename ConsoleMutex, class Alloc = default_allocator_t>
 class wincolor_stdout_sink : public wincolor_sink<ConsoleMutex, Alloc> {
 public:
-    explicit wincolor_stdout_sink(color_mode mode = color_mode::automatic);
+    explicit wincolor_stdout_sink(Alloc alloc = Alloc());
+    explicit wincolor_stdout_sink(color_mode mode, Alloc alloc = Alloc());
 };
 
 template <typename ConsoleMutex, class Alloc = default_allocator_t>
 class wincolor_stderr_sink : public wincolor_sink<ConsoleMutex, Alloc> {
 public:
-    explicit wincolor_stderr_sink(color_mode mode = color_mode::automatic);
+    explicit wincolor_stderr_sink(Alloc alloc = Alloc());
+    explicit wincolor_stderr_sink(color_mode mode, Alloc alloc = Alloc());
 };
 
 using wincolor_stdout_sink_mt = wincolor_stdout_sink<details::console_mutex>;
