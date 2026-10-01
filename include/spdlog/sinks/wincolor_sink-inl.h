@@ -166,12 +166,12 @@ wincolor_sink<ConsoleMutex, Alloc>::write_to_file_(const memory_buf_t &formatted
 
 // wincolor_stdout_sink
 template <typename ConsoleMutex, class Alloc>
-SPDLOG_INLINE wincolor_stdout_sink<ConsoleMutex>::wincolor_stdout_sink(color_mode mode)
+SPDLOG_INLINE wincolor_stdout_sink<ConsoleMutex, Alloc>::wincolor_stdout_sink(color_mode mode)
     : wincolor_sink<ConsoleMutex, Alloc>(::GetStdHandle(STD_OUTPUT_HANDLE), mode) {}
 
 // wincolor_stderr_sink
 template <typename ConsoleMutex, class Alloc>
-SPDLOG_INLINE wincolor_stderr_sink<ConsoleMutex>::wincolor_stderr_sink(color_mode mode)
+SPDLOG_INLINE wincolor_stderr_sink<ConsoleMutex, Alloc>::wincolor_stderr_sink(color_mode mode)
     : wincolor_sink<ConsoleMutex, Alloc>(::GetStdHandle(STD_ERROR_HANDLE), mode) {}
 }  // namespace sinks
 }  // namespace spdlog
