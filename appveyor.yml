@@ -46,6 +46,16 @@ environment:
       WCHAR_FILES: 'OFF'
       BUILD_EXAMPLE: 'OFF'
       USE_STD_FORMAT: 'OFF'
+      CXX_STANDARD: 11
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - GENERATOR: '"Visual Studio 16 2019" -A x64'
+      BUILD_TYPE: Release
+      BUILD_SHARED: 'ON'
+      FATAL_ERRORS: 'ON'
+      WCHAR: 'OFF'
+      WCHAR_FILES: 'OFF'
+      BUILD_EXAMPLE: 'OFF'
+      USE_STD_FORMAT: 'OFF'
       CXX_STANDARD: 17
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     - GENERATOR: '"Visual Studio 17 2022" -A x64'
