@@ -34,10 +34,14 @@
 #undef SPDLOG_HEADER_ONLY
 #if defined(SPDLOG_SHARED_LIB)
 #if defined(_WIN32)
-#undef SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_ENABLED
-#undef SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_DISABLED
-#define SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_ENABLED(X)
-#define SPDLOG_IF_EMPTY_ALLOC_OPTIMIZATION_DISABLED(X) X
+// EBO is intentionally kept enabled on Windows shared builds.
+// Disabling it (storing Alloc as a member instead of a private base) causes MSVC to
+// export std::allocator<char>'s own member functions from the DLL when the explicit
+// template instantiation of basic_logger<std::allocator<char>> carries dllexport.
+// Those symbols then collide with copies in consumer TUs (LNK2005).
+// Since default_allocator_t (std::allocator<char>) is always an empty type, EBO and
+// the member-storage path produce identical sizeof(basic_logger), so there is no
+// layout difference across the DLL boundary for the default allocator.
 #ifdef speedylog_EXPORTS
 #define SPDLOG_API __declspec(dllexport)
 #define SPDLOG_INSTANTIATED_TEMPLATE_API __declspec(dllexport)
